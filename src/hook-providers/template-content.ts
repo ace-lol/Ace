@@ -5,6 +5,8 @@ import { redefine } from "../util";
 type Callback = (doc: DocumentFragment) => any;
 const CALLBACKS: Callback[] = [];
 
+export const NAME = "template-content";
+
 // TODO(molenzwiebel): This is most definitely not the best way to edit templates,
 // but it provides an easy way to make sure we are able to edit the template before
 // fragments-js is able to compile it. The best alternative probably consists of
@@ -20,7 +22,7 @@ export function register(fun: Callback) {
 }
 
 /**
- * Initializes this hook by wrapping HTMLTemplateElement.content.
+ * Initializes this hook provider by wrapping HTMLTemplateElement.content.
  */
 export function initialize() {
     redefine<DocumentFragment>(HTMLTemplateElement.prototype, "content", function(original) {

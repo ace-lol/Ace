@@ -8,6 +8,8 @@ type Callback = (req: XMLHttpRequest, ...args: any[]) => any;
 const OPTIONS = (<any>window).Symbol("ace-xmlhttprequest-options");
 const HOOKS: { matcher: Matcher, fun: Callback }[] = [];
 
+export const NAME = "http";
+
 /**
  * Registers a new hook for the specified matcher which gets triggered
  * when the ready state of an XMLHttpRequest changes.
@@ -15,12 +17,12 @@ const HOOKS: { matcher: Matcher, fun: Callback }[] = [];
  * @param matcher Either a regex or a string to match the url to.
  * @param callback A function taking the XMLHttpRequest and optional extra onreadystatechange arguments.
  */
-export function register(matcher: Matcher, fun: Callback) {
+export function register(fun: Callback, matcher: Matcher) {
     HOOKS.push({ matcher, fun });
 }
 
 /**
- * Initializes this hook by wrapping XMLHttpRequest.open/.send.
+ * Initializes this hook provider by wrapping `XMLHttpRequest.open/.send`.
  */
 export function initialize() {
     const proto = XMLHttpRequest.prototype;

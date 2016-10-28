@@ -2,6 +2,8 @@
 
 import { wrap_method } from "../util";
 
+export const NAME = "register-element";
+
 /**
  * Since document.registerElement is not finalized, it is not yet contained
  * in the standard definitions provided by TypeScript. This is a dummy interface
@@ -22,12 +24,12 @@ const HOOKS: { matcher: string, fun: Callback }[] = [];
  * The hook is able to directly modify the arguments it receives,
  * and the return value of the callback function is ignored.
  */
-export function register(matcher: string, fun: Callback) {
+export function register(fun: Callback, matcher: string) {
     HOOKS.push({ matcher, fun });
 }
 
 /**
- * Initializes this hook by wrapping `document.registerElement`.
+ * Initializes this hook provider by wrapping `document.registerElement`.
  */
 export function initialize() {
     wrap_method(document, "registerElement", (original, [name, args]) => {

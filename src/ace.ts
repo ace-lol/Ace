@@ -2,14 +2,25 @@
 
 import { simple_fetch, throw_expr, wrap_method } from "./util";
 import BuiltinPlugin, { PluginInfo } from "./builtin-plugin";
+import HookManager from "./hook-manager";
 import Promise = require("bluebird");
+
+import * as HTTP_HOOK from "./hook-providers/http";
+import * as REGISTER_ELEMENT_HOOK from "./hook-providers/register-element";
+import * as TEMPLATE_CONTENT_HOOK from "./hook-providers/template-content";
 
 export default class Ace {
     builtinPlugins: BuiltinPlugin[];
+    hookManager: HookManager;
 
     constructor() {
         this.builtinPlugins = [];
         this.fetchBuiltinPluginInformation();
+
+        this.hookManager = new HookManager();
+        this.hookManager.registerHookProvider(HTTP_HOOK);
+        this.hookManager.registerHookProvider(REGISTER_ELEMENT_HOOK);
+        this.hookManager.registerHookProvider(TEMPLATE_CONTENT_HOOK);
     }
 
     /**
