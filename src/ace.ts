@@ -2,8 +2,13 @@
 
 import { simple_fetch, throw_expr, wrap_method } from "./util";
 import BuiltinPlugin, { PluginInfo } from "./builtin-plugin";
+import Plugin from "./plugin";
 import HookManager from "./hook-manager";
+import registerPlugins from "./plugins";
+
+import toposort = require("toposort");
 import Promise = require("bluebird");
+import semver = require("semver");
 
 import * as HTTP_HOOK from "./hook-providers/http";
 import * as REGISTER_ELEMENT_HOOK from "./hook-providers/register-element";
@@ -11,6 +16,7 @@ import * as TEMPLATE_CONTENT_HOOK from "./hook-providers/template-content";
 
 export default class Ace {
     builtinPlugins: BuiltinPlugin[];
+    plugins: Plugin[];
     hookManager: HookManager;
 
     constructor() {
@@ -21,18 +27,39 @@ export default class Ace {
         this.hookManager.registerHookProvider(HTTP_HOOK);
         this.hookManager.registerHookProvider(REGISTER_ELEMENT_HOOK);
         this.hookManager.registerHookProvider(TEMPLATE_CONTENT_HOOK);
+
+        this.plugins = [];
+        registerPlugins(this);
+        this.resolvePluginDependencies();
+        this.initializePlugins();
     }
 
     /**
-     * Returns the plugin with the specified `fullName`, or `null` otherwise.
+     * Registers a new plugin
      */
-    getPluginWithName(fullName: string): BuiltinPlugin | null {
+    registerPlugin(plugin: Plugin) {
+        if (this.plugins.filter(x => x.name === plugin.name).length) throw `There is already a plugin named ${plugin.name} registered.`;
+        this.plugins.push(plugin);
+    }
+
+    /**
+     * Returns the built-in plugin with the specified `fullName`, or `null` otherwise.
+     */
+    getBuiltinPluginWithName(fullName: string): BuiltinPlugin | null {
         const matching = this.builtinPlugins.filter(x => x.info.fullName === fullName);
         return matching.length > 0 ? matching[0] : null;
     }
 
     /**
-     * Uses the builtin LCU api to gather information on the currently running plugins.
+     * Returns the plugin with the specified name, or `null` otherwise.
+     */
+    getPluginWithName(name: String): Plugin | null {
+        const matching = this.plugins.filter(x => x.name === name);
+        return matching.length > 0 ? matching[0] : null;
+    }
+
+    /**
+     * Uses the built-in LCU api to gather information on the currently running "native" plugins.
      */
     private fetchBuiltinPluginInformation(): Promise<void> {
         return new Promise<void>(resolve => {
@@ -43,7 +70,7 @@ export default class Ace {
                 // Resolve dependencies.
                 this.builtinPlugins.forEach(plugin => {
                     plugin.dependencies = plugin.info.dependencies.map(x => {
-                        return this.getPluginWithName(x.fullName) || throw_expr(`Missing plugin dependency ${JSON.stringify(x)} for ${plugin.info.fullName}.`);
+                        return this.getBuiltinPluginWithName(x.fullName) || throw_expr(`Missing builtin plugin dependency ${JSON.stringify(x)} for ${plugin.info.fullName}.`);
                     });
                 });
 
@@ -56,9 +83,9 @@ export default class Ace {
      * This is called by the injected code whenever the script tag has loaded.
      * We then perform some dark magic to intercept the provider and api.
      */
-    /*effectively private*/ handleOnLoad(entry: { pluginName: string, document: Document, originalLoad: () => void }) {
+    /*private*/ handleOnLoad(entry: { pluginName: string, document: Document, originalLoad: () => void }) {
         this.initializeBuiltinPlugin(
-            this.getPluginWithName(entry.pluginName) || throw_expr(`Onload for nonexisting plugin ${entry.pluginName}?`),
+            this.getBuiltinPluginWithName(entry.pluginName) || throw_expr(`Onload for nonexisting builtin plugin ${entry.pluginName}?`),
             entry.document,
             entry.originalLoad
         );
@@ -111,6 +138,63 @@ export default class Ace {
         // This call here informs `rcp-fe-plugin-loader` that our plugin is ready to initialize.
         // This will (eventually) call document.dispatchEvent, thus arriving at the code above.
         onload();
+    }
+
+    /**
+     * Checks if every plugin dependency is statisfied and topologically sorts `this.plugins`
+     * so that the order of initialization statisfies the dependencies. Errors if there is a
+     * cyclic dependency or if a dependency is not statisfied by the current plugins. Should
+     * not be called more than once, and should only be called once all plugins are initialized.
+     */
+    private resolvePluginDependencies() {
+        // Step 1: Check dependencies and prepare the topological sort.
+        const edges: [string, string][] = [];
+        const standalone: Plugin[] = []; 
+        this.plugins.forEach(plugin => {
+            const deps = plugin.description.dependencies || {};
+
+            if (Object.keys(deps).length <= 0) {
+                // We need to keep track of the standalone plugins, since they
+                // will not show up in the `edges` array. We add these standalone
+                // plugins later, after all depended plugins are loaded.
+                standalone.push(plugin);
+            }
+
+            Object.keys(deps).forEach(depName => {
+                const range = semver.validRange(deps[depName]);
+                if (!range) throw `Invalid dependency: ${plugin} specifies ${depName}@${deps[depName]}, which is not a valid version format.`;
+                const dep = this.getPluginWithName(depName) || throw_expr(`Unmet dependency: ${plugin} depends on ${depName}, which is not installed or loaded.`);
+                if (!semver.satisfies(dep.description.version, range)) throw `Unmet dependency: ${plugin} depends on ${depName}@${deps[depName]} (${range}), but ${dep} is installed.`;
+
+                edges.push([plugin.name, depName]);
+            });
+        });
+
+        try {
+            // Step 2: Topologically sort the array. We reverse here because toposort gives
+            // us the most depended upon plugin first. We then add all standalone plugins at
+            // the end of the array, since it doesn't matter in which way they are initialized.
+            const sortedPlugins = toposort(edges)
+                .reverse()
+                .map(name => this.getPluginWithName(name)!);
+
+            // Only add plugins that aren't yet in the list.
+            this.plugins = sortedPlugins.concat(standalone.filter(p => sortedPlugins.indexOf(p) === -1));
+        } catch (e) {
+            const culprit = /^Cyclic dependency: "(.*)"$/.exec(e.message)![1];
+
+            // toposort throws an error if there is a cycle.
+            throw `Cyclic dependency: A plugin depends on \`${culprit}\`, which eventually depends back on the plugin depending on \`${culprit}\` in the first place.`;
+        }
+    }
+
+    /**
+     * Simply calls initialize on every Plugin instance.
+     */
+    private initializePlugins() {
+        this.plugins.forEach(plugin => {
+            plugin.setup();
+        });
     }
 }
 
