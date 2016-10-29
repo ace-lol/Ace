@@ -87,7 +87,7 @@ export default class Plugin {
      * @see HookManager#hook
      */
     hook(hookName: string, callback: Callback, ...matchers: any[]) {
-        this.ace.hookManager.hook(this, hookName, callback, ...matchers);
+        return this.ace.hookManager.hook(this, hookName, callback, ...matchers);
     }
 
     /**
@@ -99,6 +99,7 @@ export default class Plugin {
 
     /**
      * Registers a callback for _just before_ the provided plugin initializes.
+     * It is recommended that you attach hooks here, to minimize their lifetime.
      * *Warning*: This does not check if the plugin name is valid.
      */
     preinit(name: string, fn: LifecycleCallback) {
@@ -107,6 +108,7 @@ export default class Plugin {
 
     /**
      * Registers a callback for _just after_ the provided plugin initializes.
+     * It is recommended that you unregister hooks here, to minimize their lifetime.
      * *Warning*: This does not check if the plugin name is valid.
      */
     postinit(name: string, fn: LifecycleCallback) {

@@ -20,6 +20,8 @@ export default class HookManager {
     /**
      * Adds a new hook for the specified HookProvider name.
      * Warns if another plugin also has a hook for the same matchers.
+     * 
+     * @return unregister A function that can be called to unregister the hook.
      */
     hook(plugin: Plugin, hookName: string, callback: Callback, ...matchers: any[]) {
         if (!this.hookProviders[hookName]) throw `Unknown HookProvider: ${hookName}`;
@@ -40,8 +42,14 @@ export default class HookManager {
             });
         }
 
-        this.hookArguments[hookName].push({ owner: plugin, args: matchers });
-        hookProvider.register(callback, ...matchers);
+        const entry = { owner: plugin, args: matchers };
+        this.hookArguments[hookName].push(entry);
+        
+        const unregister = hookProvider.register(callback, ...matchers);
+        return () => {
+            this.hookArguments[hookName].splice(this.hookArguments[hookName].indexOf(entry), 1);
+            unregister();
+        };
     }
 
     /**

@@ -23,9 +23,15 @@ const HOOKS: { matcher: string, fun: Callback }[] = [];
  * 
  * The hook is able to directly modify the arguments it receives,
  * and the return value of the callback function is ignored.
+ * 
+ * @returns unregister A function that can be called to unregister the hook.
  */
 export function register(fun: Callback, matcher: string) {
-    HOOKS.push({ matcher, fun });
+    const obj = { matcher, fun };
+    HOOKS.push(obj);
+    return () => {
+        HOOKS.splice(HOOKS.indexOf(obj), 1);
+    };
 }
 
 /**

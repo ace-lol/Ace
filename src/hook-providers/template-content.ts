@@ -19,6 +19,10 @@ export const NAME = "template-content";
  */
 export function register(fun: Callback) {
     CALLBACKS.push(fun);
+
+    return () => {
+        CALLBACKS.splice(CALLBACKS.indexOf(fun), 1);
+    };
 }
 
 /**

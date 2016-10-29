@@ -26,6 +26,8 @@ export interface HookProvider {
      * This function is called when a plugin registers a hook. Ace is responsible for checking
      * if any other plugins already registered said hook, so this method should only add
      * the hook to its own internal hook "storage".
+     * 
+     * Returns a function that can be called to unregister the provided callback.
      */
-    register: (callback: Callback, ...params: any[]) => void;
+    register: (callback: Callback, ...params: any[]) => (() => void);
 }

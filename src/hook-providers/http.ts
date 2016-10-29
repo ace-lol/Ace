@@ -14,11 +14,16 @@ export const NAME = "http";
  * Registers a new hook for the specified matcher which gets triggered
  * when the ready state of an XMLHttpRequest changes.
  * 
+ * @param fun A function taking the XMLHttpRequest and optional extra onreadystatechange arguments.
  * @param matcher Either a regex or a string to match the url to.
- * @param callback A function taking the XMLHttpRequest and optional extra onreadystatechange arguments.
+ * @returns unregister A function that can be called to unregister the hook.
  */
 export function register(fun: Callback, matcher: Matcher) {
-    HOOKS.push({ matcher, fun });
+    const obj = { matcher, fun };
+    HOOKS.push(obj);
+    return () => {
+        HOOKS.splice(HOOKS.indexOf(obj), 1);
+    };
 }
 
 /**
