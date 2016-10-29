@@ -3,14 +3,11 @@
 import Ace from "../ace";
 import Plugin, { PluginDescription } from "../plugin";
 
-const PLUGINS: PluginDescription[] = [{
-    name: "hello-world",
-    version: "0.1.0",
-    description: "Hello, world!",
-    setup() {
-        return "Hello, world!";
-    }
-}];
+import HideMobile from "./hide-mobile";
+
+const PLUGINS: PluginDescription[] = [
+    HideMobile
+];
 
 export default function register(ace: Ace) {
     PLUGINS.forEach(des => {

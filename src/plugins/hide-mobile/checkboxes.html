@@ -1,0 +1,20 @@
+<!-- Default 'Hide Offline' -->
+<lol-social-menu-item class="separator">
+    <lol-uikit-flat-checkbox>
+        <input id="hide-offline-checkbox" type="checkbox" on-change="{{saveRosterFilter()}}" checked?="{{data.playerSettings.hideOffline}}">
+        <label id="hide-offline-label">{{ t('dropdown_hide_offline') }}</label>
+    </lol-uikit-flat-checkbox>
+</lol-social-menu-item>
+
+<!-- Added by Ace -->
+<lol-social-menu-item>
+    <lol-uikit-flat-checkbox>
+        <!-- We need to use `playerSettings.accountSettings.data[hideMobile]` instead of `playerSettings.hideMobile` or similar. -->
+        <!-- This is because rcp-fe-lol-social registers various getters/setters for properties on playerSettings, but those just -->
+        <!-- delegate to accountSettings.data. Since there is no getter/setter for hideMobile, we need to do it manually. -->
+        <input id="hide-mobile-checkbox" type="checkbox" on-change="{{saveRosterFilter()}}" checked?="{{data.playerSettings.accountSettings.data['hideMobile']}}">
+
+        <!-- Noticably, the strings for translating are already present. -->
+        <label id="hide-mobile-label">{{ t('dropdown_hide_mobile') }}</label>
+    </lol-uikit-flat-checkbox>
+</lol-social-menu-item>
