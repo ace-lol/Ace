@@ -2,7 +2,7 @@
 
 import { throw_expr } from "./util";
 import { Callback } from "./hook-providers";
-import Ace from "./ace";
+import Ace, { LifecycleCallback } from "./ace";
 
 export interface PluginDescription {
     /**
@@ -95,5 +95,21 @@ export default class Plugin {
      */
     getPlugin(name: string): Plugin {
         return this.ace.getPluginWithName(name) || throw_expr(`No plugin with name ${name}`);
+    }
+
+    /**
+     * Registers a callback for _just before_ the provided plugin initializes.
+     * *Warning*: This does not check if the plugin name is valid.
+     */
+    preinit(name: string, fn: LifecycleCallback) {
+        (this.ace.preinitHooks[name] = (this.ace.preinitHooks[name] || [])).push(fn);
+    }
+
+    /**
+     * Registers a callback for _just after_ the provided plugin initializes.
+     * *Warning*: This does not check if the plugin name is valid.
+     */
+    postinit(name: string, fn: LifecycleCallback) {
+        (this.ace.postinitHooks[name] = (this.ace.postinitHooks[name] || [])).push(fn);
     }
 }

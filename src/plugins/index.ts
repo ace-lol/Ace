@@ -8,7 +8,8 @@ const PLUGINS: PluginDescription[] = [{
     version: "0.1.0",
     description: "Hello, world!",
     setup() {
-        console.debug("Initialized " + this);
+        this.preinit("rcp-fe-viewport", () => console.debug("Viewport pre-init"));
+        this.postinit("rcp-fe-viewport", () => console.debug("Viewport post-init"));
         return "Hello, world!";
     }
 }];

@@ -14,13 +14,20 @@ import * as HTTP_HOOK from "./hook-providers/http";
 import * as REGISTER_ELEMENT_HOOK from "./hook-providers/register-element";
 import * as TEMPLATE_CONTENT_HOOK from "./hook-providers/template-content";
 
+export type LifecycleCallback = (plugin: BuiltinPlugin) => void;
+
 export default class Ace {
     builtinPlugins: BuiltinPlugin[];
     plugins: Plugin[];
     hookManager: HookManager;
 
+    preinitHooks: { [name: string]: LifecycleCallback[] };
+    postinitHooks: { [name: string]: LifecycleCallback[] };
+
     constructor() {
         this.builtinPlugins = [];
+        this.preinitHooks = {};
+        this.postinitHooks = {};
         this.fetchBuiltinPluginInformation();
 
         this.hookManager = new HookManager();
@@ -95,6 +102,8 @@ export default class Ace {
      * Initializes the previously intercept built-in plugin.
      */
     private initializeBuiltinPlugin(plugin: BuiltinPlugin, doc: Document, onload: () => void) {
+        const self = this;
+
         // Step 1: Intercept document.dispatchEvent to get access to the riotPlugin.announce event.
         // This event contains the provider that has various bindings interesting to us.
         wrap_method(doc, "dispatchEvent", function(original: (ev: AnnounceEvent) => void, [event]: [AnnounceEvent]) {
@@ -123,11 +132,19 @@ export default class Ace {
                             plugin.api = api;
                             plugin.provider = p;
 
+                            if (self.postinitHooks[plugin.info.fullName]) {
+                                self.postinitHooks[plugin.info.fullName].forEach(f => f(plugin));
+                            }
+
                             // At this point we have the api, so we are ready to resolve
                             // the promise that we delivered in step 2.
                             resolve(api);
                         });
                     };
+
+                    if (self.preinitHooks[plugin.info.fullName]) {
+                        self.preinitHooks[plugin.info.fullName].forEach(f => f(plugin));
+                    }
 
                     // Step 4: Relay this fake event to the original plugin code.
                     original(fakeEvent);
