@@ -4,9 +4,11 @@ import Ace from "../ace";
 import Plugin, { PluginDescription } from "../plugin";
 
 import HideMobile from "./hide-mobile";
+import NoShutdownPrompt from "./no-shutdown-prompt";
 
 const PLUGINS: PluginDescription[] = [
-    HideMobile
+    HideMobile,
+    NoShutdownPrompt
 ];
 
 export default function register(ace: Ace) {
