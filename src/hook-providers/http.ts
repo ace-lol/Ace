@@ -3,7 +3,7 @@
 import { wrap_method } from "../util";
 
 type Matcher = RegExp | string;
-type Callback = (req: XMLHttpRequest, ...args: any[]) => any;
+type Callback = (req: XMLHttpRequest, url: string, ...args: any[]) => any;
 
 const OPTIONS = (<any>window).Symbol("ace-xmlhttprequest-options");
 const HOOKS: { matcher: Matcher, fun: Callback }[] = [];
@@ -51,7 +51,7 @@ export function initialize() {
             if (!this[OPTIONS]) throw "XMLHttpRequest has no OPTIONS symbol. Something is wrong with the hook.";
             
             const url = this[OPTIONS].url;
-            HOOKS.filter(h => typeof h.matcher === "string" ? h.matcher === url : url.match(h.matcher)).forEach(h => h.fun(this, ...args));
+            HOOKS.filter(h => typeof h.matcher === "string" ? h.matcher === url : url.match(h.matcher)).forEach(h => h.fun(this, url, ...args));
             return original(...args);
         });
 
