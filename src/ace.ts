@@ -28,7 +28,6 @@ export default class Ace {
         this.builtinPlugins = [];
         this.preinitHooks = {};
         this.postinitHooks = {};
-        this.fetchBuiltinPluginInformation();
 
         this.hookManager = new HookManager();
         this.hookManager.registerHookProvider(HTTP_HOOK);
@@ -37,8 +36,11 @@ export default class Ace {
 
         this.plugins = [];
         registerPlugins(this);
-        this.resolvePluginDependencies();
-        this.initializePlugins();
+
+        this.fetchBuiltinPluginInformation().then(() => {
+            this.resolvePluginDependencies();
+            this.initializePlugins();
+        });
     }
 
     /**
@@ -184,6 +186,17 @@ export default class Ace {
                 if (!semver.satisfies(dep.description.version, range)) throw `Unmet dependency: ${plugin} depends on ${depName}@${deps[depName]} (${range}), but ${dep} is installed.`;
 
                 edges.push([plugin.name, depName]);
+            });
+
+            const nativeDeps = plugin.description.builtinDependencies || {};
+            Object.keys(nativeDeps).forEach(depName => {
+                const pl = this.getBuiltinPluginWithName(depName);
+                if (!pl) throw `Unmet built-in dependency: ${plugin} depends on ${depName}, which is not installed or loaded.`;
+                if (!semver.valid(pl.info.version)) throw `Invalid built-in plugin: ${depName} does not have a valid semver version (${pl.info.version})`;
+
+                const range = semver.validRange(nativeDeps[depName]);
+                if (!range) throw `Invalid built-in dependency: ${plugin} specifies ${depName}@${nativeDeps[depName]}, which is not a valid version format.`;
+                if (!semver.satisfies(pl.info.version, range)) throw `Unmet built-in dependency: ${plugin} depends on ${depName}@${deps[depName]} (${range}), but ${pl.info.version} is installed.`;
             });
         });
 

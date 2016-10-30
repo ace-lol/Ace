@@ -2,6 +2,7 @@
 
 import { throw_expr } from "./util";
 import { Callback } from "./hook-providers";
+import BuiltinPlugin from "./builtin-plugin";
 import Ace, { LifecycleCallback } from "./ace";
 
 export interface PluginDescription {
@@ -25,6 +26,22 @@ export interface PluginDescription {
      * Follows the format { PLUGIN_NAME: SEMVER }
      */
     dependencies?: { [key: string]: string };
+
+    /**
+     * The native dependencies that this plugin requires in order to function.
+     * Use this to pin down the versions of the plugins that your plugin supports,
+     * as to prevent changes done by Riot from causing errors or worse.
+     * 
+     * This makes the assumption that all Riot built-in plugins have a valid semver version.
+     * As of the writing of this code, patch 6.21, this is true. If the built-in plugin does
+     * not have a valid semver version, it will _never_ match, thus preventing plugins that
+     * rely on the invalid built-in plugin from loading.
+     * 
+     * Note however that, unlike `dependencies`, this does not guarantee initialization
+     * order. `setup` will _always_ be called before a single native plugin initializes. This
+     * field should only be used to let Ace verify the requirements your plugin has.
+     */
+    builtinDependencies?: { [key: string]: string };
 
     /**
      * Called before the built-in plugins are initialized.
@@ -78,10 +95,6 @@ export default class Plugin {
         return this._api!;
     }
 
-    toString() {
-        return `${this.description.name}@${this.description.version}`;
-    }
-
     /**
      * Shortcut to register a new hook for the current plugin.
      * @see HookManager#hook
@@ -95,6 +108,13 @@ export default class Plugin {
      */
     getPlugin(name: string): Plugin {
         return this.ace.getPluginWithName(name) || throw_expr(`No plugin with name ${name}`);
+    }
+
+    /**
+     * Gets the built-in plugin with the specified name. Throws if the plugin is not installed.
+     */
+    getBuiltinPlugin(name: string): BuiltinPlugin {
+        return this.ace.getBuiltinPluginWithName(name) || throw_expr(`No built-in plugin with name ${name}`);
     }
 
     /**
@@ -113,5 +133,12 @@ export default class Plugin {
      */
     postinit(name: string, fn: LifecycleCallback) {
         (this.ace.postinitHooks[name] = (this.ace.postinitHooks[name] || [])).push(fn);
+    }
+
+    /**
+     * Overrides toString to print `NAME@VERSION`.
+     */
+    toString() {
+        return `${this.description.name}@${this.description.version}`;
     }
 }
