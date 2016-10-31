@@ -10,8 +10,9 @@ module.exports = {
             // Javascript.
             { test: /\.tsx?$/, loader: 'ts-loader' },
 
-            // CSS and Less.
+            // CSS, Stylus and Less.
             { test: /\.css$/, loader: 'style-loader!css-loader' },
+            { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader' },
             { test: /\.less$/, loader: 'style-loader!css-loader!less-loader' },
         ],
     },
@@ -20,12 +21,12 @@ module.exports = {
     output: {
         path: './src/built',
         filename: 'bundle.js',
-        publicPath: 'http://localhost:8080/built/'
+        publicPath: 'https://localhost:8080/built/'
     },
 
     resolve: {
-        // Resolve typescript files
-        extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
+        // Resolve typescript and stylus files
+        extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.styl']
     },
 
     devtool: 'cheap-source-map',

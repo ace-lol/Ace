@@ -4,15 +4,18 @@
   "description": "(League of Legends) Alpha Client Enhancer",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack-dev-server --https --progress --colors --watch --hot --inline"
   },
   "author": "molenzwiebel",
   "license": "MIT",
   "devDependencies": {
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
-    "typescript": "^2.0.6",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^2.3.1",
     "ts-loader": "^0.9.5",
+    "typescript": "^2.0.6",
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1"
   },

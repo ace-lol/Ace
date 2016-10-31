@@ -1,0 +1,118 @@
+main-text-color = #a09b8c
+
+.skins-root-component
+    font-family "LoL Display"
+
+    &:not(.loading-hidden)
+        padding 0
+        display flex
+        flex-direction row
+        margin-top 3px
+    
+    .left-pane
+        flex 0 0 194px
+        margin-right 35px
+        display flex
+        flex-direction column
+
+        .count
+            flex 0 0 186px
+            display flex
+            flex-direction column
+            text-align center
+            background-image url("/fe/lol-collections/ring.png")
+            background-repeat no-repeat
+
+        .count .number
+            flex 0 0 40px
+            background linear-gradient(to bottom, #cdbe91 0%, #c8aa6e 35%, #765c29 100%)
+            -webkit-background-clip text
+            -webkit-text-fill-color transparent
+            font-weight 700
+            line-height 42px
+            letter-spacing 0.05em
+
+            &.owned
+                margin-top 30px
+                font-size 40px
+        
+            &.total
+                font-size 30px
+
+        .count .of
+            color main-text-color
+            font-size 20px
+            line-height 20px
+
+        .count .skin-text
+            margin 0px 47px
+            font-size 16px
+            width 100px
+            color main-text-color
+            font-weight 700
+            line-height 18px
+            letter-spacing 0.075em
+
+        .show-unowned
+        .sort-order
+            padding-top 10px
+
+    .right-pane
+        width 774px
+        display flex
+        flex-direction column
+        height 576px
+
+        .champion-category
+            padding-bottom 15px
+
+            .title
+                padding 0 10px
+                display flex
+                justify-content space-between
+                color main-text-color
+                font-weight 700
+                font-size 16px
+
+            hr
+                position relative
+                height 1px
+                border-width 0
+                background linear-gradient(to right, rgba(205, 190, 145, 0.47), transparent)
+
+            .champion-skins
+                display flex
+                flex-direction row
+                flex-wrap wrap
+
+            .skin
+                cursor pointer
+                margin 8px
+                width 170px
+                height 80px
+                background-position center
+                background-size cover
+                border 1px solid #3c3c41
+                position relative
+
+                &:not(.unowned):hover
+                    border-image-slice 1
+                    border-image-repeat stretch
+                    border-image-source linear-gradient(to bottom, #f0e6d2 4%, #c89b3c 100%)
+
+                &.unowned:after
+                    content ""
+                    height 100%
+                    width 100%
+                    background rgba(0, 0, 0, 0.8) url("/fe/lol-uikit/images/icon-lock-small.png")
+                    position absolute
+                    background-position center
+                    background-size contain
+                    background-repeat no-repeat
+                    transition 0.4s ease
+
+                &.unowned:hover:after
+                    background rgba(0, 0, 0, 0.4) url("/fe/lol-uikit/images/icon-lock-small.png")
+                    background-position center
+                    background-size contain
+                    background-repeat no-repeat

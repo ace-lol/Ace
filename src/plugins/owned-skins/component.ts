@@ -5,6 +5,8 @@ import { Ember, SkinsEmberComponent, Champion } from './definitions';
 import LAYOUT = require("./layout.hbs");
 import Promise = require("bluebird");
 
+import "./style";
+
 export default function(Ember: Ember, championDetails: any) {
     return Ember.Component.extend({
         classNames: ["skin-component"],
