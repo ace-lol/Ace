@@ -68,6 +68,22 @@ export default class Ace {
     }
 
     /**
+     * Returns a promise that resolves when the API for the specified built-in
+     * plugin is loaded and available.
+     */
+    getBuiltinApi(name: string): Promise<any> {
+        if (this.getBuiltinPluginWithName(name)!.isInitialized) {
+            return Promise.resolve(this.getBuiltinPluginWithName(name)!.api);
+        }
+
+        return new Promise(resolve => {
+            (this.postinitHooks[name] = (this.postinitHooks[name] || [])).push(plugin => {
+                resolve(plugin.api);
+            });
+        });
+    }
+
+    /**
      * Uses the built-in LCU api to gather information on the currently running "native" plugins.
      */
     private fetchBuiltinPluginInformation(): Promise<void> {
@@ -131,6 +147,7 @@ export default class Ace {
                         result = result && result.then ? result : Promise.resolve(result); // Convert to promise.
 
                         result.then((api: any) => {
+                            plugin.isInitialized = true;
                             plugin.api = api;
                             plugin.provider = p;
 

@@ -4,6 +4,7 @@ import { throw_expr } from "./util";
 import { Callback } from "./hook-providers";
 import BuiltinPlugin from "./builtin-plugin";
 import Ace, { LifecycleCallback } from "./ace";
+import Promise = require("bluebird");
 
 export interface PluginDescription {
     /**
@@ -133,6 +134,14 @@ export default class Plugin {
      */
     postinit(name: string, fn: LifecycleCallback) {
         (this.ace.postinitHooks[name] = (this.ace.postinitHooks[name] || [])).push(fn);
+    }
+
+    /**
+     * Returns a promise that resolves when the exported API for the specified
+     * built-in plugin is available.
+     */
+    getBuiltinApi(pluginName: string): Promise<any> {
+        return this.ace.getBuiltinApi(pluginName);
     }
 
     /**

@@ -27,6 +27,7 @@ export default class BuiltinPlugin {
     dependencies: BuiltinPlugin[];
     info: PluginInfo;
 
+    isInitialized: boolean;
     api: any | null;
     provider: any | null;
 
@@ -34,6 +35,7 @@ export default class BuiltinPlugin {
         this.info = info;
         this.dependencies = [];
 
+        this.isInitialized = false;
         this.api = null;
         this.provider = null;
     }
