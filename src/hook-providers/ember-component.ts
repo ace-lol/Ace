@@ -6,7 +6,7 @@ import Promise = require("bluebird");
 
 export const NAME = "ember-component";
 
-type Callback = (args: any[]) => any;
+type Callback = (Ember: any, args: any[]) => any;
 const HOOKS: { matcher: string, fun: Callback }[] = [];
 
 // TODO(molenzwiebel): Is there a better matching mechanism than class names?
@@ -41,12 +41,12 @@ export function initialize(ace: Ace) {
         embers.forEach(Ember => {
             wrap_method(Ember.Component, "extend", function(original, args) {
                 // Find the classNames component, in case there were mixins present.
-                const name = (<any[]>args).filter(x => (typeof x === "object") && x.classNames).map(x => x.classNames.join(" "));
+                const name = (<any[]>args).filter(x => (typeof x === "object") && x.classNames && Array.isArray(x.classNames)).map(x => x.classNames.join(" "));
                 let res = original(...args);
 
                 if (name.length) {
                     HOOKS.filter(x => x.matcher === name[0]).forEach(hook => {
-                        const hookResult = hook.fun(args);
+                        const hookResult = hook.fun(Ember, args);
                         if (hookResult) {
                             res = res.extend(hookResult);
                         }
