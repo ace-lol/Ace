@@ -12,8 +12,8 @@ export default (<PluginDescription>{
     description: "Shows your owned skins in the `Collections` tab.",
     
     builtinDependencies: {
-        "rcp-fe-lol-collections": "^1.0.27",
-        "rcp-fe-lol-champion-details": "^0.0.134"
+        "rcp-fe-lol-collections": "1.0.x",
+        "rcp-fe-lol-champion-details": "0.0.x"
     },
 
     setup() {

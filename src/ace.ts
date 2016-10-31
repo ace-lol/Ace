@@ -213,7 +213,7 @@ export default class Ace {
 
                 const range = semver.validRange(nativeDeps[depName]);
                 if (!range) throw `Invalid built-in dependency: ${plugin} specifies ${depName}@${nativeDeps[depName]}, which is not a valid version format.`;
-                if (!semver.satisfies(pl.info.version, range)) throw `Unmet built-in dependency: ${plugin} depends on ${depName}@${deps[depName]} (${range}), but ${pl.info.version} is installed.`;
+                if (!semver.satisfies(pl.info.version, range)) throw `Unmet built-in dependency: ${plugin} depends on ${depName}@${nativeDeps[depName]} (${range}), but ${pl.info.version} is installed.`;
             });
         });
 
