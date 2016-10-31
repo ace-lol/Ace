@@ -5,10 +5,12 @@ import Plugin, { PluginDescription } from "../plugin";
 
 import HideMobile from "./hide-mobile";
 import NoShutdownPrompt from "./no-shutdown-prompt";
+import OwnedSkins from "./owned-skins";
 
 const PLUGINS: PluginDescription[] = [
     HideMobile,
-    NoShutdownPrompt
+    NoShutdownPrompt,
+    OwnedSkins
 ];
 
 export default function register(ace: Ace) {

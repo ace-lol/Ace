@@ -1,0 +1,208 @@
+<!-- This div is displayed during loading and covers the entire screen. -->
+<div class="loading-spinner {{ unless isLoading 'loading-fade-out' }}"></div>
+
+<!-- Once loading is done, we display the skins-root-component. -->
+<div class="skins-root-component {{ if isLoading 'loading-hidden' 'loading-fade-in' }}">
+    <div class="left-pane">
+        <div class="count">
+            <!-- Skin count out of total. -->
+            <span class="number owned">{{ownedSkinCount}}</span>
+            <span class="of">of</span>
+            <span class="number total">{{totalSkinCount}}</span>
+            <span class="skin-text">SKINS</span>
+        </div>
+
+        <!-- Show unowned checkbox. Uses the builtin uikit component. -->
+        <lol-uikit-flat-checkbox class="show-unowned" {{ action 'toggleUnowned' }}>
+            <input type="checkbox" checked={{showUnowned}}>
+            <label>Show Unowned</label>
+        </lol-uikit-flat-checkbox>
+
+        <!-- The various sorting options. Again, we make use of the builtin uikit components. -->
+        <lol-uikit-radio-input class="sort-order">
+            <lol-uikit-radio-input-option selected={{sort_alphabetical}} {{ action 'sort' 'alphabetical' }}>
+                ALPHABETICAL
+            </lol-uikit-radio-input-option>
+            
+            <lol-uikit-radio-input-option selected={{sort_mastery}} {{ action 'sort' 'mastery' }}>
+                MASTERY
+            </lol-uikit-radio-input-option>
+            
+            <lol-uikit-radio-input-option selected={{sort_count}} {{ action 'sort' 'count' }}>
+                COUNT
+            </lol-uikit-radio-input-option>     
+         </lol-uikit-radio-input>
+    </div>
+
+    <!-- By wrapping our view in lol-uikit-scrollable, we automatically get LCU-style scrollbars. -->
+    <lol-uikit-scrollable class="right-pane">
+        <!-- For every champion... -->
+        {{#each champions as |champion|}}
+            <div class="champion-category">
+                <!-- ... we have a name ... -->
+                <div class="title">
+                    <span>{{champion.name}}</span>
+                    <span>{{champion.ownedSkins.length}}/{{champion.allSkins.length}}</span>
+                </div>
+
+                <!-- ... a divider ... -->
+                <hr>
+                
+                <div class="champion-skins">
+                {{#if showUnowned}}
+                    <!-- ... and either all the skins ... -->
+                    {{#each champion.allSkins as |skin|}}
+                        <div class="skin {{ if skin.ownership.owned 'owned' 'unowned'}}" style="background-image: url({{skin.tilePath}})" {{ action 'open' champion }}></div>
+                    {{/each}}
+                {{else}}
+                    <!-- or just the owned skins. -->
+                    {{#each champion.ownedSkins as |skin|}}
+                        <div class="skin" style="background-image: url({{skin.tilePath}})" {{ action 'open' champion }}></div>
+                    {{/each}}
+                {{/if}}
+                </div>
+            </div>
+	    {{/each}}
+    </lol-uikit-scrollable>
+</div>
+
+<style>
+.skins-root-component:not(.loading-hidden) {
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    margin-top: 3px;
+}
+
+.skins-root-component .left-pane {
+    flex: 0 0 194px;
+    margin-right: 35px;
+    display: flex;
+    flex-direction: column;
+}
+
+.skins-root-component .left-pane .count {
+    flex: 0 0 186px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-image: url(/fe/lol-collections/ring.png);
+    background-repeat: no-repeat;
+
+    font-family: 'LoL Display';
+}
+
+.skins-root-component .left-pane .count .number {
+    flex: 0 0 40px;
+    background: linear-gradient(to bottom, #cdbe91 0%, #c8aa6e 35%, #765c29 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    line-height: 42px;
+    letter-spacing: 0.05em;
+}
+
+.skins-root-component .left-pane .count .number.owned {
+    margin-top: 30px;
+    font-size: 40px;
+}
+
+.skins-root-component .left-pane .count .number.total {
+    margin-top: 0px;
+    font-size: 30px;
+}
+
+.skins-root-component .left-pane .count .of {
+    color: #a09b8c;
+    font-size: 20px;
+    line-height: 20px;
+    font-family: 'LoL Display';
+}
+
+.skins-root-component .left-pane .count .skin-text {
+    margin: 0px 47px;
+    font-size: 16px;
+    width: 100px;
+    color: #a09b8c;
+    font-weight: 700;
+    line-height: 18px;
+    letter-spacing: 0.075em;
+}
+
+.skins-root-component .left-pane .show-unowned {
+    padding-top: 10px;
+}
+
+.skins-root-component .left-pane .sort-order {
+    padding-top: 10px;
+}
+
+.skins-root-component .right-pane {
+    width: 774px;
+    display: flex;
+    flex-direction: column;
+    height: 576px;
+}
+
+.skins-root-component .champion-category {
+    padding-bottom: 15px;
+}
+
+.skins-root-component .champion-category .champion-skins {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.skins-root-component .champion-category .title {
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.skins-root-component .champion-category .title span {
+    color: #a09b8c;
+    font-family: "LoL Display";
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.skins-root-component .champion-category hr {
+    position: relative;
+    height: 1px;
+    border-width: 0;
+    background: linear-gradient(to right, rgba(205, 190, 145, 0.47), transparent);
+}
+
+.skins-root-component .skin {
+    margin: 8px;
+    width: 170px;
+    height: 80px;
+    background-position: center;
+    background-size: cover;
+
+    border: 1px solid #3c3c41;
+    border-image-slice: 1;
+    border-image-repeat: stretch;
+
+    transition: 0.5s ease;
+    position: relative;
+}
+
+.skins-root-component .skin.unowned:after {
+    content: "";
+    height: 80px;
+    width: 170px;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8) url("/fe/lol-uikit/images/icon-lock-small.png");
+    position: absolute;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.skins-root-component .skin:hover:not(.unowned) {
+    cursor: pointer;
+    border-image-source: linear-gradient(to bottom, #f0e6d2 4%, #c89b3c 100%);
+}
+</style>
