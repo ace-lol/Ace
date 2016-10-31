@@ -29,7 +29,7 @@ export default class Ace {
         this.preinitHooks = {};
         this.postinitHooks = {};
 
-        this.hookManager = new HookManager();
+        this.hookManager = new HookManager(this);
         this.hookManager.registerHookProvider(HTTP_HOOK);
         this.hookManager.registerHookProvider(REGISTER_ELEMENT_HOOK);
         this.hookManager.registerHookProvider(TEMPLATE_CONTENT_HOOK);

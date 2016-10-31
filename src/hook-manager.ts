@@ -2,6 +2,7 @@
 
 import { HookProvider, Callback } from "./hook-providers";
 import Plugin from "./plugin";
+import Ace from "./ace";
 
 interface HookArguments {
     owner: Plugin;
@@ -9,10 +10,12 @@ interface HookArguments {
 };
 
 export default class HookManager {
+    ace: Ace;
     hookProviders: { [name: string]: HookProvider };
     hookArguments: { [name: string]: HookArguments[] };
 
-    constructor() {
+    constructor(ace: Ace) {
+        this.ace = ace;
         this.hookProviders = {};
         this.hookArguments = {};
     }
@@ -60,7 +63,7 @@ export default class HookManager {
         if (this.hookProviders[prov.NAME]) throw `HookProvider ${prov.NAME} is already registered.`;
         this.hookProviders[prov.NAME] = prov;
         this.hookArguments[prov.NAME] = [];
-        prov.initialize();
+        prov.initialize(this.ace);
     }
 
     private areParamsEqual(a: any[], b: any[]): boolean {

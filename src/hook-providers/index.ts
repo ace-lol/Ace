@@ -1,5 +1,7 @@
 "use strict";
 
+import Ace from "../ace";
+
 export type Callback = (...args: any[]) => any
 
 /**
@@ -20,7 +22,7 @@ export interface HookProvider {
      * There is no uninitialize property provided, since Ace does not support anything
      * like reloading plugins without reloading the page.
      */
-    initialize: () => void;
+    initialize: (instance: Ace) => void;
 
     /**
      * This function is called when a plugin registers a hook. Ace is responsible for checking
