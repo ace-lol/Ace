@@ -13,6 +13,7 @@ import semver = require("semver");
 import * as HTTP_HOOK from "./hook-providers/http";
 import * as REGISTER_ELEMENT_HOOK from "./hook-providers/register-element";
 import * as TEMPLATE_CONTENT_HOOK from "./hook-providers/template-content";
+import * as EMBER_COMPONENT_HOOK from "./hook-providers/ember-component";
 
 export type LifecycleCallback = (plugin: BuiltinPlugin) => void;
 
@@ -29,15 +30,16 @@ export default class Ace {
         this.preinitHooks = {};
         this.postinitHooks = {};
 
-        this.hookManager = new HookManager(this);
-        this.hookManager.registerHookProvider(HTTP_HOOK);
-        this.hookManager.registerHookProvider(REGISTER_ELEMENT_HOOK);
-        this.hookManager.registerHookProvider(TEMPLATE_CONTENT_HOOK);
-
         this.plugins = [];
         registerPlugins(this);
 
         this.fetchBuiltinPluginInformation().then(() => {
+            this.hookManager = new HookManager(this);
+            this.hookManager.registerHookProvider(HTTP_HOOK);
+            this.hookManager.registerHookProvider(REGISTER_ELEMENT_HOOK);
+            this.hookManager.registerHookProvider(TEMPLATE_CONTENT_HOOK);
+            this.hookManager.registerHookProvider(EMBER_COMPONENT_HOOK);
+
             this.resolvePluginDependencies();
             this.initializePlugins();
         });
