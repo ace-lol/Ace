@@ -13,3 +13,11 @@ declare module "*.hbs" {
     const contents: string;
     export = contents;
 }
+
+/**
+ * JSON files export any object.
+ */
+declare module "*.json" {
+    const contents: any;
+    export = contents;
+}

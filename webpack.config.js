@@ -7,8 +7,11 @@ module.exports = {
             { test: /\.html$/, loader: 'raw-loader' },
             { test: /\.hbs$/, loader: 'raw-loader' },
 
-            // Javascript.
+            // TypeScript.
             { test: /\.tsx?$/, loader: 'ts-loader' },
+
+            // JSON
+            { test: /\.json$/, loader: 'json-loader' },
 
             // CSS, Stylus and Less.
             { test: /\.css$/, loader: 'style-loader!css-loader' },
@@ -26,7 +29,7 @@ module.exports = {
 
     resolve: {
         // Resolve typescript and stylus files
-        extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.styl']
+        extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.styl', '.hbs', '.json']
     },
 
     devtool: 'cheap-source-map',

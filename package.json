@@ -10,6 +10,7 @@
   "author": "molenzwiebel",
   "license": "MIT",
   "devDependencies": {
+    "json-loader": "^0.5.4",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "stylus": "^0.54.5",

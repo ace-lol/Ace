@@ -6,11 +6,13 @@ import Plugin, { PluginDescription } from "../plugin";
 import HideMobile from "./hide-mobile";
 import NoShutdownPrompt from "./no-shutdown-prompt";
 import OwnedSkins from "./owned-skins";
+import SummonerIconDescription from "./summoner-icon-description";
 
 const PLUGINS: PluginDescription[] = [
     HideMobile,
     NoShutdownPrompt,
-    OwnedSkins
+    OwnedSkins,
+    SummonerIconDescription
 ];
 
 export default function register(ace: Ace) {
