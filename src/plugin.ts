@@ -62,12 +62,14 @@ export default class Plugin {
     readonly ace: Ace;
     readonly description: PluginDescription;
 
+    valid: boolean;
     isInitialized: boolean;
     private _api: any | null;
 
     constructor(ace: Ace, description: PluginDescription) {
         this.ace = ace;
         this.description = description;
+        this.valid = true;
     }
 
     /**

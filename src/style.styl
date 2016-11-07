@@ -50,6 +50,7 @@ notification-height = 30px
                 background-color #a94442
 
         .title
+            cursor default
             text-transform uppercase
             font-weight bold
             padding-right 10px
@@ -58,10 +59,14 @@ notification-height = 30px
 
         // Some twat uses .message without checking ancestry, so we use .not-message.
         .not-message
+            cursor default
             padding-left 10px
             flex 1
-            align-self flex-begin
+            align-self flex-start
             line-height notification-height
+            overflow hidden
+            white-space nowrap
+            text-overflow ellipsis
 
         close-line-height = notification-height - 10
         close-container-width = math(math((close-line-height * close-line-height) / 2, 'sqrt'), 'floor') + 10

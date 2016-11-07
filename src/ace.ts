@@ -1,6 +1,6 @@
 "use strict";
 
-import { simple_fetch, throw_expr, wrap_method } from "./util";
+import { simple_promise_fetch, wrap_method } from "./util";
 import BuiltinPlugin, { PluginInfo } from "./builtin-plugin";
 import Plugin from "./plugin";
 import HookManager from "./hook-manager";
@@ -21,9 +21,15 @@ import "./style";
 export type LifecycleCallback = (plugin: BuiltinPlugin) => void;
 
 export default class Ace {
+    pendingOnloads: any[];
     builtinPlugins: BuiltinPlugin[];
     plugins: Plugin[];
     hookManager: HookManager;
+
+    // If we encountered something that definitely _shouldn't_ happen, this is
+    // set to true. If we are dormant, we will not inject into anything, to
+    // prevent any further errors.
+    dormant: boolean;
 
     preinitHooks: { [name: string]: LifecycleCallback[] };
     postinitHooks: { [name: string]: LifecycleCallback[] };
@@ -34,18 +40,28 @@ export default class Ace {
     notificationElement: HTMLDivElement;
 
     constructor() {
+        this.pendingOnloads = [];
         this.builtinPlugins = [];
         this.preinitHooks = {};
         this.postinitHooks = {};
+        this.dormant = false;
 
         this.notificationElement = document.createElement("div");
         this.notificationElement.className = "ace-notifications";
         document.body.appendChild(this.notificationElement);
 
-        this.plugins = [];
-        registerPlugins(this);
+        try {
+            this.plugins = [];
+            registerPlugins(this);
+        } catch (e) {
+            this.addNotification("error", "Error", `Unrecoverable error initializing Ace: '${e}'. Ace will disable itself.`);
+            this.dormant = true;
+            return;
+        }
 
         this.fetchBuiltinPluginInformation().then(() => {
+            if (this.dormant) return;
+
             this.hookManager = new HookManager(this);
             this.hookManager.registerHookProvider(HTTP_HOOK);
             this.hookManager.registerHookProvider(REGISTER_ELEMENT_HOOK);
@@ -54,6 +70,13 @@ export default class Ace {
 
             this.resolvePluginDependencies();
             this.initializePlugins();
+        }).catch(e => {
+            // Log error to console.
+            console.log(e);
+
+            this.addNotification("error", "Error", `Unrecoverable error initializing Ace: '${e}'. Ace will disable itself.`);
+            this.dormant = true;
+            return;
         });
     }
 
@@ -61,7 +84,9 @@ export default class Ace {
      * Registers a new plugin
      */
     registerPlugin(plugin: Plugin) {
-        if (this.plugins.filter(x => x.name === plugin.name).length) throw `There is already a plugin named ${plugin.name} registered.`;
+        if (this.plugins.filter(x => x.name === plugin.name).length) {
+            this.addNotification("warning", "Warning", "Duplicate plugin '${plugin.name}'. Ignoring the second one.");
+        }
         this.plugins.push(plugin);
     }
 
@@ -101,20 +126,24 @@ export default class Ace {
      * Uses the built-in LCU api to gather information on the currently running "native" plugins.
      */
     private fetchBuiltinPluginInformation(): Promise<void> {
-        return new Promise<void>(resolve => {
-            simple_fetch("/plugin-manager/v2/plugins", json => {
-                const plugins = JSON.parse(json) as PluginInfo[];
-                this.builtinPlugins = plugins.map(p => new BuiltinPlugin(p));
+        return simple_promise_fetch("/plugin-manager/v2/plugins").then(json => {
+            const plugins = JSON.parse(json) as PluginInfo[];
+            this.builtinPlugins = plugins.map(p => new BuiltinPlugin(p));
 
-                // Resolve dependencies.
-                this.builtinPlugins.forEach(plugin => {
-                    plugin.dependencies = plugin.info.dependencies.map(x => {
-                        return this.getBuiltinPluginWithName(x.fullName) || throw_expr(`Missing builtin plugin dependency ${JSON.stringify(x)} for ${plugin.info.fullName}.`);
-                    });
+            // Resolve dependencies.
+            this.builtinPlugins.forEach(plugin => {
+                plugin.dependencies = plugin.info.dependencies.map(x => {
+                    const dep = this.getBuiltinPluginWithName(x.fullName);
+                    if (!dep) this.addNotification("warning", "Warning", `Native plugin ${plugin.info.fullName} specified missing dependency ${x.fullName}.`);
+                    return dep!;
                 });
-
-                resolve();
             });
+        }).catch(e => {
+            // Log error to console.
+            console.log(e);
+
+            this.addNotification("error", "Error", `Unrecoverable error while communicating with server: ${e}. Ace will disable itself.`);
+            this.dormant = true;
         });
     }
 
@@ -123,15 +152,36 @@ export default class Ace {
      * We then perform some dark magic to intercept the provider and api.
      */
     /*private*/ handleOnLoad(entry: { pluginName: string, document: Document, originalLoad: () => void }) {
-        this.initializeBuiltinPlugin(
-            this.getBuiltinPluginWithName(entry.pluginName) || throw_expr(`Onload for nonexisting builtin plugin ${entry.pluginName}?`),
-            entry.document,
-            entry.originalLoad
-        );
+        if (this.dormant) {
+            entry.originalLoad();
+            return;
+        }
+
+        // If we haven't loaded the plugin info yet, delay the initialization.
+        if (this.builtinPlugins.length === 0) {
+            this.pendingOnloads.push(entry);
+            return;
+        }
+
+        // If we had plugins we hadn't yet initialized, do it now.
+        if (this.pendingOnloads.length) {
+            const clone = this.pendingOnloads.slice();
+            this.pendingOnloads = [];
+            clone.forEach(pending => this.handleOnLoad(pending));
+        }
+
+        const nativePlugin = this.getBuiltinPluginWithName(entry.pluginName);
+        if (!nativePlugin) {
+            this.addNotification("error", "Error", `Ace encountered a native plugin it didn't recognize and cannot continue. Ace will disable itself.`);
+            this.dormant = true;
+            return;
+        }
+
+        this.initializeBuiltinPlugin(nativePlugin, entry.document, entry.originalLoad);
     }
 
     /**
-     * Initializes the previously intercept built-in plugin.
+     * Initializes the previously intercepted built-in plugin.
      */
     private initializeBuiltinPlugin(plugin: BuiltinPlugin, doc: Document, onload: () => void) {
         const self = this;
@@ -212,9 +262,25 @@ export default class Ace {
 
             Object.keys(deps).forEach(depName => {
                 const range = semver.validRange(deps[depName]);
-                if (!range) throw `Invalid dependency: ${plugin} specifies ${depName}@${deps[depName]}, which is not a valid version format.`;
-                const dep = this.getPluginWithName(depName) || throw_expr(`Unmet dependency: ${plugin} depends on ${depName}, which is not installed or loaded.`);
-                if (!semver.satisfies(dep.description.version, range)) throw `Unmet dependency: ${plugin} depends on ${depName}@${deps[depName]} (${range}), but ${dep} is installed.`;
+
+                if (!range) {
+                    this.addNotification("warning", "Warning", `Invalid dependency: '${plugin}' specifies '${depName}@${deps[depName]}', which is not a valid version format. Disabling it.`);
+                    plugin.valid = false;
+                    return;
+                }
+                
+                const dep = this.getPluginWithName(depName);
+                if (!dep) {
+                    this.addNotification("warning", "Warning", `Unmet dependency: '${plugin}' depends on '${depName}', which is not installed or loaded. Disabling it.`);
+                    plugin.valid = false;
+                    return;
+                }
+
+                if (!semver.satisfies(dep.description.version, range)) {
+                    this.addNotification("warning", "Warning", `Unmet dependency: '${plugin}' depends on '${depName}@${deps[depName]}' (${range}), but '${dep}' is installed. Disabling '${plugin}'.`);
+                    plugin.valid = false;
+                    return;
+                }
 
                 edges.push([plugin.name, depName]);
             });
@@ -222,12 +288,24 @@ export default class Ace {
             const nativeDeps = plugin.description.builtinDependencies || {};
             Object.keys(nativeDeps).forEach(depName => {
                 const pl = this.getBuiltinPluginWithName(depName);
-                if (!pl) throw `Unmet built-in dependency: ${plugin} depends on ${depName}, which is not installed or loaded.`;
-                if (!semver.valid(pl.info.version)) throw `Invalid built-in plugin: ${depName} does not have a valid semver version (${pl.info.version})`;
+                if (!pl) {
+                    this.addNotification("warning", "Warning", `Unmet built-in dependency: '${plugin}' depends on '${depName}', which is not installed or loaded. Disabling it.`);
+                    plugin.valid = false;
+                    return;
+                }
 
                 const range = semver.validRange(nativeDeps[depName]);
-                if (!range) throw `Invalid built-in dependency: ${plugin} specifies ${depName}@${nativeDeps[depName]}, which is not a valid version format.`;
-                if (!semver.satisfies(pl.info.version, range)) throw `Unmet built-in dependency: ${plugin} depends on ${depName}@${nativeDeps[depName]} (${range}), but ${pl.info.version} is installed.`;
+                if (!range) {
+                    this.addNotification("warning", "Warning", `Invalid built-in dependency: '${plugin}' specifies '${depName}@${nativeDeps[depName]}', which is not a valid version format. Disabling it.`);
+                    plugin.valid = false;
+                    return;
+                }
+
+                if (!semver.satisfies(pl.info.version, range)) {
+                    this.addNotification("warning", "Warning", `Unmet built-in dependency: '${plugin}' depends on '${depName}@${nativeDeps[depName]}' (${range}), but '${pl.info.version}' is installed. Disabling '${plugin}'.`);
+                    plugin.valid = false;
+                    return;
+                }
             });
         });
 
@@ -240,12 +318,36 @@ export default class Ace {
                 .map(name => this.getPluginWithName(name)!);
 
             // Only add plugins that aren't yet in the list.
-            this.plugins = sortedPlugins.concat(standalone.filter(p => sortedPlugins.indexOf(p) === -1));
-        } catch (e) {
-            const culprit = /^Cyclic dependency: "(.*)"$/.exec(e.message)![1];
+            const filteredPlugins = sortedPlugins.concat(standalone.filter(p => sortedPlugins.indexOf(p) === -1));
 
-            // toposort throws an error if there is a cycle.
-            throw `Cyclic dependency: A plugin depends on \`${culprit}\`, which eventually depends back on the plugin depending on \`${culprit}\` in the first place.`;
+            // Disable any plugins that rely on other disabled plugins.
+            this.plugins = filteredPlugins.filter(pl => {
+                if (!pl.valid) return false;
+
+                Object.keys(pl.description.dependencies || {}).forEach(dep => {
+                    if (!this.getPluginWithName(dep)!.valid) {
+                        this.addNotification("warning", "Warning", `Disabling '${pl}' because it relies on '${dep}', which could not be loaded.`);
+                        pl.valid = false;
+                    }
+                });
+
+                return pl.valid;
+            });
+        } catch (e) {
+            // Log error to console.
+            console.log(e);
+
+            if (/^Cyclic dependency: "(.*)"$/.exec(e.message)) {
+                const culprit = /^Cyclic dependency: "(.*)"$/.exec(e.message)![1];
+
+                // toposort throws an error if there is a cycle.
+                this.addNotification("error", "Error", `Cyclic dependency: A plugin depends on \`${culprit}\`, which eventually depends back on the plugin depending on \`${culprit}\` in the first place. This is unrecoverable. Disabling Ace.`);
+                this.dormant = true;
+                return;
+            }
+
+            this.addNotification("error", "Error", `Unrecoverable error while resolving plugin dependencies: '${e}'. Ace will disable itself.`);
+            this.dormant = true;
         }
     }
 
@@ -253,8 +355,19 @@ export default class Ace {
      * Simply calls initialize on every Plugin instance.
      */
     private initializePlugins() {
+        if (this.dormant) return;
+
         this.plugins.forEach(plugin => {
-            plugin.setup();
+            if (!plugin.valid) return;
+
+            try {
+                plugin.setup();
+            } catch (e) {
+                // Log error to console.
+                console.log(e);
+
+                this.addNotification("warning", "Warning", `Error during initialization of '${plugin}': ${e}.`);
+            }
         });
     }
 
