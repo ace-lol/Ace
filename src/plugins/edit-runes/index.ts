@@ -31,8 +31,10 @@ export default (<PluginDescription>{
 
 const Mixin = (Ember: any, uikit: any, ace: Ace) => ({
     didInsertElement() {
+        // Call super
         this._super();
 
+        // This is never null due to initialization order.
         const runeApi = ace.getBuiltinPluginWithName("rcp-fe-lol-runes")!.api;
 
         // Creates a simple overlay with a lol-uikit-full-page-modal child.

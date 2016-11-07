@@ -15,6 +15,9 @@ import * as REGISTER_ELEMENT_HOOK from "./hook-providers/register-element";
 import * as TEMPLATE_CONTENT_HOOK from "./hook-providers/template-content";
 import * as EMBER_COMPONENT_HOOK from "./hook-providers/ember-component";
 
+// Mainly notification styles.
+import "./style";
+
 export type LifecycleCallback = (plugin: BuiltinPlugin) => void;
 
 export default class Ace {
@@ -25,10 +28,19 @@ export default class Ace {
     preinitHooks: { [name: string]: LifecycleCallback[] };
     postinitHooks: { [name: string]: LifecycleCallback[] };
 
+    // These notifications are mainly for errors during startup.
+    // Since we cannot be sure that _any_ plugin is loaded, including uikit's ToastManager,
+    // we have to create a completely different notification system.
+    notificationElement: HTMLDivElement;
+
     constructor() {
         this.builtinPlugins = [];
         this.preinitHooks = {};
         this.postinitHooks = {};
+
+        this.notificationElement = document.createElement("div");
+        this.notificationElement.className = "ace-notifications";
+        document.body.appendChild(this.notificationElement);
 
         this.plugins = [];
         registerPlugins(this);
@@ -244,6 +256,26 @@ export default class Ace {
         this.plugins.forEach(plugin => {
             plugin.setup();
         });
+    }
+
+    /**
+     * Adds a new notification that deletes itself when the X is pressed.
+     */
+    private addNotification(type: string, title: string, contents: string) {
+        const html = `<div class="notification ${type}">
+            <span class="title">${title}</span>
+            <span class="not-message">${contents}</span>
+  	        <span class="close"><span class="cl1"></span><span class="cl2"></span></span>
+        </div>`;
+
+        const tmp = document.createElement("div");
+        tmp.innerHTML = html;
+
+        const el = tmp.children[0];        
+        el.querySelector(".close").addEventListener("click", () => {
+            el.parentElement.removeChild(el);
+        });
+        this.notificationElement.appendChild(el);
     }
 }
 

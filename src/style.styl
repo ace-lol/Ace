@@ -1,0 +1,93 @@
+notification-height = 30px
+
+.ace-notifications
+    // Position on top, always.
+    position absolute
+    left 0
+    top 2px // Keep room for the goldish bar
+    width 100vw
+    z-index 100
+
+    .notification
+        padding 0 10px
+        height notification-height
+
+        display flex
+        flex-direction row
+        justify-content space-between
+        align-items center
+        
+        background-color white
+        font-family 'Helvetica'
+        border-bottom 0.5px solid lightgray
+
+        // Fade in and fade out
+        animation fadein 0.5s
+
+        @keyframes fadein
+            from { opacity: 0; }
+            to   { opacity: 1; }
+
+        // Blue-ish color.
+        &.info
+            background-color #d9edf7
+            color #31708f
+            & .close > span
+                background-color #31708f
+
+        // Yellow-ish color.
+        &.warning
+            background-color #fcf8e3
+            color #8a6d3b
+            & .close > span
+                background-color #8a6d3b
+
+        // Reddish color.
+        &.error
+            background-color #f2dede
+            color #a94442
+            & .close > span
+                background-color #a94442
+
+        .title
+            text-transform uppercase
+            font-weight bold
+            padding-right 10px
+            border-right 0.5px solid lightgray
+            line-height notification-height
+
+        // Some twat uses .message without checking ancestry, so we use .not-message.
+        .not-message
+            padding-left 10px
+            flex 1
+            align-self flex-begin
+            line-height notification-height
+
+        close-line-height = notification-height - 10
+        close-container-width = math(math((close-line-height * close-line-height) / 2, 'sqrt'), 'floor') + 10
+
+        // To make a nice x, we rotate some stuff.
+        .close
+            position relative
+            width close-container-width
+            height notification-height
+
+            cursor pointer
+            border-left 0.5px solid lightgray
+
+            // A single line of the X
+            & > span
+                position absolute
+                top 5px
+                left (close-container-width / 2 + 5)
+                width 2px
+                height close-line-height
+                background-color black
+
+            // Line 1
+            .cl1
+                transform rotate(45deg)
+            
+            // Line 2
+            .cl2
+                transform rotate(-45deg)
