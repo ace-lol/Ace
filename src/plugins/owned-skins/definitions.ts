@@ -8,7 +8,11 @@ export interface ChampionMastery {
 
 export interface Skin {
     name: string;
-    ownership: { owned: boolean };
+    id: number;
+    ownership: {
+        owned: boolean,
+        rental: { purchaseDate: number }
+    };
 }
 
 export interface Champion {
@@ -24,9 +28,11 @@ export interface Champion {
 export abstract class SkinsEmberComponent {
     _data: Champion[];
     _mastery: ChampionMastery[];
+    $: (selector: string) => any;
 
     abstract get(key: "sortMode"): "alphabetical" | "mastery" | "count";
     abstract get(key: "showUnowned"): boolean;
+    abstract get(key: "champions"): Champion[];
 
     abstract set(key: "sortMode", val: "alphabetical" | "mastery" | "count"): void;
     abstract set(key: string, val: any): void;
@@ -41,5 +47,7 @@ export interface Ember {
     Component: { extend: (key: {}) => void };
     HTMLBars: { compile: (content: string) => any };
     on: (event: string, cb: () => any) => any;
+    observer: (...args: any[]) => any;
     A: <T>(arr: T[]) => T[];
+    run: { next: (target: any, fn: (() => any) | string) => void };
 }

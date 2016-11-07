@@ -1,13 +1,13 @@
 "use strict";
 
 import { simple_promise_fetch } from "../../util";
-import { Ember, SkinsEmberComponent, Champion } from './definitions';
+import { Ember, SkinsEmberComponent, Champion, Skin } from './definitions';
 import LAYOUT = require("./layout.hbs");
 import Promise = require("bluebird");
 
 import "./style";
 
-export default function(Ember: Ember, championDetails: any) {
+export default function(Ember: Ember, championDetails: any, uikit: any) {
     return Ember.Component.extend({
         classNames: ["skin-component"],
         layout: Ember.HTMLBars.compile(LAYOUT),
@@ -54,6 +54,38 @@ export default function(Ember: Ember, championDetails: any) {
                 this.set("isLoading", false);
             });
         }),
+
+        onChampionListChange: Ember.observer("champions", "showUnowned", function(this: SkinsEmberComponent) {
+            // Run on the next tick since we need the new DOM elements.
+            Ember.run.next(this, "updateTooltips");
+        }),
+
+        updateTooltips: function(this: SkinsEmberComponent) {
+            (<Skin[]>[]).concat(...this.get("champions").map(c => this.get("showUnowned") ? c.allSkins : c.ownedSkins)).forEach(skin => {
+                const el = this.$(".skin[data-skin-id='" + skin.id + "']");
+                
+                const RenderTooltip = () => {
+                    const tooltipText = skin.ownership.owned ? `Purchased on ${new Date(skin.ownership.rental.purchaseDate).toISOString().slice(0, 10)}` : "Not owned";
+
+                    const tooltipEl = document.createElement("lol-uikit-tooltip");
+                    tooltipEl.className = "skin-tooltip " + (skin.ownership.owned ? "owned" : "unowned");
+                    tooltipEl.appendChild(uikit.getTemplateHelper().contentBlockTooltip(skin.name, tooltipText, "tooltip-system"));
+                    return tooltipEl;
+                };
+
+                uikit.getTooltipManager().assign(el, RenderTooltip, {}, {
+                    targetAnchor: {
+                        x: "center",
+                        y: "top"
+                    },
+                    tooltipAnchor: {
+                        x: "center",
+                        y: "bottom"
+                    },
+                    hideEvent: "mouseleave"
+                });
+            });
+        },
 
         actions: {
             sort(this: SkinsEmberComponent, mode: "alphabetical" | "mastery" | "count") {

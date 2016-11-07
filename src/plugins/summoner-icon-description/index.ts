@@ -10,7 +10,8 @@ export default (<PluginDescription>{
     version: "0.1.0",
     description: "Adds descriptions to your summoner icons.",
     builtinDependencies: {
-        "rcp-fe-lol-summoner-icon-picker": "0.0.x"
+        "rcp-fe-lol-summoner-icon-picker": "0.0.x",
+        "rcp-fe-lol-uikit": "*"
     },
     setup() {
         // Expand ranges.

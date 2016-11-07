@@ -52,12 +52,12 @@
                 {{#if showUnowned}}
                     <!-- ... and either all the skins ... -->
                     {{#each champion.allSkins as |skin|}}
-                        <div class="skin {{ if skin.ownership.owned 'owned' 'unowned'}}" style="background-image: url({{skin.tilePath}})" {{ action 'open' champion }}></div>
+                        <div data-skin-id="{{skin.id}}" class="skin {{ if skin.ownership.owned 'owned' 'unowned'}}" style="background-image: url({{skin.tilePath}})" {{ action 'open' champion }}></div>
                     {{/each}}
                 {{else}}
                     <!-- or just the owned skins. -->
                     {{#each champion.ownedSkins as |skin|}}
-                        <div class="skin" style="background-image: url({{skin.tilePath}})" {{ action 'open' champion }}></div>
+                        <div data-skin-id="{{skin.id}}" class="skin" style="background-image: url({{skin.tilePath}})" {{ action 'open' champion }}></div>
                     {{/each}}
                 {{/if}}
                 </div>

@@ -13,7 +13,8 @@ export default (<PluginDescription>{
     
     builtinDependencies: {
         "rcp-fe-lol-collections": "1.0.x",
-        "rcp-fe-lol-champion-details": "0.0.x"
+        "rcp-fe-lol-champion-details": "0.0.x",
+        "rcp-fe-lol-uikit": "*"
     },
 
     setup() {
@@ -32,15 +33,16 @@ export default (<PluginDescription>{
         Promise.all([
             this.getBuiltinApi("rcp-fe-lol-champion-details"),
             this.getBuiltinApi("rcp-fe-lol-collections"),
+            this.getBuiltinApi("rcp-fe-lol-uikit"),
             this.getBuiltinApi("rcp-fe-ember-libs").then(api => api.getEmber("2.4.5"))
-        ]).then(([championDetailApi, collectionsApi, Ember]) => {
+        ]).then(([championDetailApi, collectionsApi, uikitApi, Ember]) => {
             collectionsApi.registerSubSection({
                 name: "skins",
                 locKey: "collections_sub_nav_skins",
                 componentFactoryName: "SkinsRootComponent",
                 componentFactoryDef: {
                     name: "SkinsRootComponent",
-                    SkinsRootComponent: getComponent(Ember, championDetailApi)
+                    SkinsRootComponent: getComponent(Ember, championDetailApi, uikitApi)
                 },
                 priority: 150
             });
