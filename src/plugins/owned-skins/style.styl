@@ -1,5 +1,47 @@
 main-text-color = #a09b8c
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fade-out {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.skin-component
+    .loading-spinner
+        width 40px
+        height 40px
+
+        background-image url('/fe/lol-collections/spinner.png')
+        background-size 40px
+
+        animation spin 4000ms infinite linear
+
+        margin auto 508px
+        position absolute
+        top 0
+        left 0
+        bottom 0
+        right 0
+
+    .loading-fade-out
+        animation spin 4000ms infinite linear, fade-out 0.5s forwards
+
+    .loading-fade-in
+        animation fade-in 0.5s forwards
+
+    .loading-hidden
+        display none
+
 .skins-root-component
     font-family "LoL Display"
 
