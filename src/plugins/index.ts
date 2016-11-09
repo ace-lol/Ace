@@ -8,13 +8,15 @@ import NoShutdownPrompt from "./no-shutdown-prompt";
 import OwnedSkins from "./owned-skins";
 import SummonerIconDescription from "./summoner-icon-description";
 import Resize from "./resize";
+import SummonerTooltip from "./summoner-tooltip";
 
 const PLUGINS: PluginDescription[] = [
     HideMobile,
     NoShutdownPrompt,
     OwnedSkins,
     SummonerIconDescription,
-    Resize
+    Resize,
+    SummonerTooltip
 ];
 
 export default function register(ace: Ace) {

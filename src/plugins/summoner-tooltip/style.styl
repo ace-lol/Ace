@@ -1,0 +1,21 @@
+.summoner-tooltip lol-uikit-content-block
+    text-align left
+
+    & p
+        margin-bottom 0 !important
+
+    .loading-spinner
+        height 47px
+        width 47px
+        margin 0 auto
+        background-image url('/fe/lol-collections/spinner.png')
+        background-size 30px
+        background-position center
+        background-repeat no-repeat
+        animation spin 4000ms infinite linear
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
