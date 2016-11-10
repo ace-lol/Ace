@@ -32,4 +32,4 @@ Once you are confident with your changes, running `npm run bundle` will create a
 
 # License
 
-Ace is released under the [LGPL](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html). Feel free to browse through the code as you like, and if you end up making any improvements or changes, please do not hesitate to make a pull request. :)
+Ace is released under the [MIT](https://github.com/ace-lol/Ace/blob/master/LICENSE) license. Feel free to browse through the code as you like, and if you end up making any improvements or changes, please do not hesitate to make a pull request. :)
