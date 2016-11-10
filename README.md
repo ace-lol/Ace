@@ -5,7 +5,7 @@ A project that aims to get useful features into the new League of Legends client
 
 Ace currently in beta and might not completely stable. Steps have been taken to ensure that Ace does not crash the client and day-to-day usage should be as stable as the normal client, but you should not be surprised if something goes wrong.
 
-### Current Plugins
+# Current Plugins
 
 - **hide-mobile**: Adds a new `Hide Mobile` option in the friends list, acting the same way as `Hide Offline`, but for players that are on mobile.  
 ![Image of hide-mobile](http://i.imgur.com/ei5ei2V.png)
@@ -18,7 +18,7 @@ Ace currently in beta and might not completely stable. Steps have been taken to 
 - **summoner-tooltip**: Adds a tooltip in champion select that shows some ranked statistics about the player, including current rank, W/L and promo status.  
 ![Image of summoner-tooltip](http://i.imgur.com/dA5Sedw.png)
 
-### Developing Ace
+# Developing Ace
 
 Ace uses TypeScript and Stylus as main languages, with Webpack as bundling tool. The webpack development server can be started using `npm run watch`, which will start a server over at `https://localhost:8080`. The easiest way to develop with this server is to clone the [Launcher](http://github.com/ace-lol/launcher) and replacing the `bundle.js` file with a dummy file that loads from the dev server:
 ```javascript
@@ -30,6 +30,6 @@ document.head.appendChild(el);
 
 Once you are confident with your changes, running `npm run bundle` will create a bundled version of Ace in `src/built/bundle.js`. This file can then be distributed with the launcher to create a single package that anyone can run.
 
-### License
+# License
 
 Ace is released under the [LGPL](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html). Feel free to browse through the code as you like, and if you end up making any improvements or changes, please do not hesitate to make a pull request. :)
