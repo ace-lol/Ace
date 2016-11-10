@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack-dev-server --https --progress --colors --watch --hot --inline"
+    "watch": "webpack-dev-server --https --progress --colors --watch --hot --inline",
+    "bundle": "webpack --optimize-dedupe --optimize-occurrence-order --optimize-minimize"
   },
   "author": "molenzwiebel",
   "license": "MIT",
