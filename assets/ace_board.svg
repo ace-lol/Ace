@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 41 (35326) - http://www.bohemiancoding.com/sketch -->
+    <title>Untitled</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#D8D8D8" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#29B6A7" offset="0%"></stop>
+            <stop stop-color="#073B69" offset="100%"></stop>
+        </linearGradient>
+        <path d="M3,4 C3,3.45 3.45,3 4,3 C4.55,3 5,3.45 5,4 C5,4.55 4.55,5 4,5 C3.45,5 3,4.55 3,4 L3,4 Z M11,4 C11,3.45 10.55,3 10,3 C9.45,3 9,3.45 9,4 C9,4.55 9.45,5 10,5 C10.55,5 11,4.55 11,4 L11,4 Z M11,10 C11,9.45 10.55,9 10,9 C9.45,9 9,9.45 9,10 C9,10.55 9.45,11 10,11 C10.55,11 11,10.55 11,10 L11,10 Z M13,0 L5,0 L5,2.17 C5.36,2.36 5.64,2.64 5.83,3 L8.17,3 C8.59,2.22 9.5,1.72 10.51,1.95 C11.26,2.14 11.87,2.75 12.04,3.5 C12.35,4.88 11.32,6.09 9.99,6.09 C9.19,6.09 8.51,5.65 8.16,5 L5.83,5 C5.41,5.8 4.5,6.28 3.49,6.03 C2.76,5.86 2.15,5.25 1.97,4.51 C1.72,3.49 2.2,2.59 3,2.17 L3,0 L1,0 C0.45,0 0,0.45 0,1 L0,13 C0,13.55 0.45,14 1,14 L6,9 L8.17,9 C8.59,8.22 9.5,7.72 10.51,7.95 C11.26,8.14 11.87,8.75 12.04,9.5 C12.35,10.88 11.32,12.09 9.99,12.09 C9.19,12.09 8.51,11.65 8.16,11 L6.99,11 L4,14 L13,14 C13.55,14 14,13.55 14,13 L14,1 C14,0.45 13.55,0 13,0 L13,0 Z" id="path-3"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="circuit-board">
+            <rect id="Rectangle" fill="url(#linearGradient-1)" x="0" y="0" width="14" height="14"></rect>
+            <g id="Octicons">
+                <g id="circuit-board">
+                    <mask id="mask-4" fill="white">
+                        <use xlink:href="#path-3"></use>
+                    </mask>
+                    <use id="Shape" fill="url(#linearGradient-2)" xlink:href="#path-3"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

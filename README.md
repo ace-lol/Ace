@@ -1,4 +1,4 @@
-# Ace
+![Ace Logo](assets/ace_logo.png?raw=true)
 
 :sparkles: Ace - Alpha Client Enhancer.  
 A project that aims to get useful features into the new League of Legends client that Riot Games has been developing.  
