@@ -55,8 +55,8 @@ export default class Ace {
 
         try {
             this.plugins = [];
-            this.initializationOrder = [];
             this.disabledPlugins = [];
+            this.initializationOrder = [];
             registerPlugins(this);
         } catch (e) {
             this.addNotification("error", "Error", `Unrecoverable error initializing Ace: '${e}'. Ace will disable itself.`);
@@ -64,7 +64,7 @@ export default class Ace {
             return;
         }
 
-        this.fetchBuiltinPluginInformation().then(() => {
+        this.fetchBuiltinPluginInformation().then(() => this.fetchDisabledPlugins()).then(() => {
             if (this.dormant) return;
 
             this.hookManager = new HookManager(this);
@@ -149,6 +149,17 @@ export default class Ace {
 
             this.addNotification("error", "Error", `Unrecoverable error while communicating with server: ${e}. Ace will disable itself.`);
             this.dormant = true;
+        });
+    }
+
+    /**
+     * Uses the built-in LCU api to fetch a list of disabled plugins.
+     */
+    private fetchDisabledPlugins(): Promise<void> {
+        return simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
+            const data = JSON.parse(json);
+
+            this.disabledPlugins = (data.data || {}).disabledPlugins || [];
         });
     }
 
