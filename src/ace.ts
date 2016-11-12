@@ -327,7 +327,7 @@ export default class Ace {
         // Yes, I am aware this is some real interesting code.
         const dependencies: [string, string][] = Array.prototype.concat(...this.plugins.filter(x => x.state === PluginState.LOADED).map(p => {
             return p.dependencies.map(x => [p.name, x.name]);
-        }))
+        }));
 
         try {
             this.initializationOrder = toposort(dependencies)

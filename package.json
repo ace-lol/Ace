@@ -27,8 +27,10 @@
   "dependencies": {
     "@types/bluebird": "^3.0.35",
     "@types/semver": "^5.3.30",
+    "@types/vue": "^1.0.31",
     "bluebird": "^3.4.6",
     "semver": "^5.3.0",
-    "toposort": "^1.0.0"
+    "toposort": "^1.0.0",
+    "vue": "^2.0.5"
   }
 }
