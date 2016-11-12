@@ -70,9 +70,24 @@ export enum PluginState {
     DISABLED,
 
     /**
-     * The plugin was not loaded because there was a problem with its dependencies.
+     * The plugin was not loaded because one or more of it's dependencies were not met.
      */
-    UNMET_DEPENDENCIES,
+    UNMET_DEPENDENCY,
+
+    /**
+     * The plugin was not loaded because one of more of it's built-in dependencies were not met.
+     */
+    UNMET_BUILTIN_DEPENDENCY,
+
+    /**
+     * The plugin was not loaded because a dependency failed to load.
+     */
+    ERRORED_DEPENDENCY,
+
+    /**
+     * The plugin errored during setup.
+     */
+    ERRORED,
 
     /**
      * The plugin was successfully loaded and enabled. Its api is now available for use.
@@ -92,7 +107,7 @@ export default class Plugin {
     // All plugins that depend on this plugin.
     dependents: Plugin[];
 
-    state: PluginState;
+    _state: PluginState;
     private _api: any | null;
 
     constructor(ace: Ace, description: PluginDescription) {
@@ -102,17 +117,17 @@ export default class Plugin {
         this.dependencies = [];
         this.dependents = [];
 
-        this.state = PluginState.LOADED;
+        this._state = PluginState.LOADED;
     }
 
     /**
      * Initializes this plugin. Throws if the plugin is already initialized.
      */
     setup() {
-        if (this.state !== PluginState.LOADED) throw `Plugin ${this} can not be initialized at this point.`;
+        if (this._state !== PluginState.LOADED) throw `Plugin ${this} can not be initialized at this point.`;
 
         this._api = this.description.setup.call(this);
-        this.state = PluginState.LOADED;
+        this._state = PluginState.ENABLED;
     }
 
     /**
@@ -127,8 +142,33 @@ export default class Plugin {
      * Throws if the plugin has not yet initialized.
      */
     get api() {
-        if (this.state !== PluginState.ENABLED) throw `Accessing API of ${this}, which is not enabled.`;
+        if (this._state !== PluginState.ENABLED) throw `Accessing API of ${this}, which is not enabled.`;
         return this._api!;
+    }
+
+    /**
+     * Returns the state of this plugin.
+     */
+    get state() {
+        return this._state;
+    }
+
+    /**
+     * Sets the state of this plugin and optionally also notifies dependents.
+     */
+    set state(newState: PluginState) {
+        if (this._state === newState) return;
+        this._state = newState;
+
+        // If we were disabled, or we miss a dependency, relay that state to whatever depends on us.
+        if (newState === PluginState.DISABLED || newState === PluginState.UNMET_DEPENDENCY) {
+            this.dependents.forEach(x => x.state = PluginState.UNMET_DEPENDENCY);
+        }
+
+        // Same, but for when a dependency errored.
+        if (newState === PluginState.ERRORED || newState === PluginState.ERRORED_DEPENDENCY) {
+            this.dependents.forEach(x => x.state = PluginState.ERRORED_DEPENDENCY);
+        }
     }
 
     /**

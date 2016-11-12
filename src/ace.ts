@@ -23,8 +23,11 @@ export type LifecycleCallback = (plugin: BuiltinPlugin) => void;
 export default class Ace {
     pendingOnloads: any[];
     builtinPlugins: BuiltinPlugin[];
-    plugins: Plugin[];
     hookManager: HookManager;
+
+    plugins: Plugin[];
+    initializationOrder: string[];
+    disabledPlugins: string[];
 
     // If we encountered something that definitely _shouldn't_ happen, this is
     // set to true. If we are dormant, we will not inject into anything, to
@@ -52,6 +55,8 @@ export default class Ace {
 
         try {
             this.plugins = [];
+            this.initializationOrder = [];
+            this.disabledPlugins = [];
             registerPlugins(this);
         } catch (e) {
             this.addNotification("error", "Error", `Unrecoverable error initializing Ace: '${e}'. Ace will disable itself.`);
@@ -72,7 +77,7 @@ export default class Ace {
             this.initializePlugins();
         }).catch(e => {
             // Log error to console.
-            console.log(e);
+            console.error(e);
 
             this.addNotification("error", "Error", `Unrecoverable error initializing Ace: '${e}'. Ace will disable itself.`);
             this.dormant = true;
@@ -140,7 +145,7 @@ export default class Ace {
             });
         }).catch(e => {
             // Log error to console.
-            console.log(e);
+            console.error(e);
 
             this.addNotification("error", "Error", `Unrecoverable error while communicating with server: ${e}. Ace will disable itself.`);
             this.dormant = true;
@@ -247,7 +252,88 @@ export default class Ace {
      * not be called more than once, and should only be called once all plugins are initialized.
      */
     private resolvePluginDependencies() {
-        
+        // Step 1: Resolve plugin dependencies.
+        this.plugins.forEach(plugin => {
+            Object.keys(plugin.description.dependencies || {}).forEach(depName => {
+                const dep = this.getPluginWithName(depName);
+
+                if (!dep) {
+                    plugin.state = PluginState.UNMET_DEPENDENCY;
+                    return;
+                }
+
+                plugin.dependencies.push(dep);
+                dep.dependents.push(plugin);
+            });
+        });
+
+        // Step 2: Mark disabled plugins as disabled.
+        this.disabledPlugins.forEach(p => {
+            const plugin = this.getPluginWithName(p);
+
+            // We don't warn since it normally isn't a problem if an old plugin has been removed.
+            if (plugin) plugin.state = PluginState.DISABLED;
+        });
+
+        // Step 3: Resolve and version check built-in dependencies.
+        this.plugins.forEach(plugin => {
+            if (plugin.state !== PluginState.LOADED) return;
+
+            Object.keys(plugin.description.builtinDependencies || {}).forEach(depName => {
+                // Anonymous function for easier control flow.
+                plugin.state = (() => {
+                    const depVer = plugin.description.builtinDependencies![depName];
+
+                    const dep = this.getBuiltinPluginWithName(depName);
+                    if (!dep) return PluginState.UNMET_BUILTIN_DEPENDENCY; // Builtin dep not found.
+
+                    const range = semver.validRange(depVer);
+                    if (!range) return PluginState.UNMET_BUILTIN_DEPENDENCY; // Invalid version range.
+                    if (!semver.satisfies(dep.info.version, range)) return PluginState.UNMET_BUILTIN_DEPENDENCY; // Not statisfied.
+
+                    // Everything is fine.
+                    return PluginState.LOADED;
+                })();
+            });
+        });
+
+        // Step 4: Resolve and version check normal dependencies.
+        this.plugins.forEach(plugin => {
+            if (plugin.state !== PluginState.LOADED) return;
+
+            plugin.dependencies.forEach(dep => {
+                const depVer = plugin.description.dependencies![dep.name];
+                const range = semver.validRange(depVer);
+
+                plugin.state =
+                    range && semver.satisfies(dep.description.version, range)
+                    ? PluginState.LOADED
+                    : PluginState.UNMET_DEPENDENCY;
+            });
+        });
+
+        // Step 5: Topologically sort plugins to find a correct initialization order.
+        // Yes, I am aware this is some real interesting code.
+        const dependencies: [string, string][] = Array.prototype.concat(...this.plugins.filter(x => x.state === PluginState.LOADED).map(p => {
+            return p.dependencies.map(x => [p.name, x.name]);
+        }))
+
+        try {
+            this.initializationOrder = toposort(dependencies)
+                .reverse()
+                // Add plugins that don't depend on anything/get depended upon, since they were not in the topological sort.
+                .concat(this.plugins.filter(x => x.state === PluginState.LOADED && x.dependents.length === 0 && x.dependencies.length === 0).map(x => x.name));
+        } catch (e) {
+            // Cyclic dependency, disable anything that depends on something else since we can't easily figure out the loop.
+            this.plugins.filter(x => x.state === PluginState.LOADED && (x.dependents.length !== 0 || x.dependencies.length !== 0)).forEach(p => {
+                p.state = PluginState.UNMET_DEPENDENCY;
+            });
+
+            // Just initialize non-dependents/depended plugins normally.
+            this.initializationOrder = this.plugins.filter(x => x.state === PluginState.LOADED && x.dependents.length === 0 && x.dependencies.length === 0).map(x => x.name);
+
+            this.addNotification("warning", "Warning", "Cyclic dependency found. Disabling all plugins that depend on something.");
+        }
     }
 
     /**
@@ -256,14 +342,17 @@ export default class Ace {
     private initializePlugins() {
         if (this.dormant) return;
 
-        this.plugins.forEach(plugin => {
-            if (plugin.state != PluginState.LOADED) return;
+        this.initializationOrder.map(x => this.getPluginWithName(x)!).forEach(plugin => {
+            if (plugin.state !== PluginState.LOADED) return;
 
             try {
                 plugin.setup();
             } catch (e) {
                 // Log error to console.
-                console.log(e);
+                console.error(e);
+
+                // Disable plugins that depend on this one.
+                plugin.state = PluginState.ERRORED;
 
                 this.addNotification("warning", "Warning", `Error during initialization of '${plugin}': ${e}.`);
             }
