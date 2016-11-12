@@ -2,7 +2,7 @@
 
 import { simple_promise_fetch, wrap_method } from "./util";
 import BuiltinPlugin, { PluginInfo } from "./builtin-plugin";
-import Plugin from "./plugin";
+import Plugin, { PluginState } from "./plugin";
 import HookManager from "./hook-manager";
 import registerPlugins from "./plugins";
 
@@ -247,108 +247,7 @@ export default class Ace {
      * not be called more than once, and should only be called once all plugins are initialized.
      */
     private resolvePluginDependencies() {
-        // Step 1: Check dependencies and prepare the topological sort.
-        const edges: [string, string][] = [];
-        const standalone: Plugin[] = []; 
-        this.plugins.forEach(plugin => {
-            const deps = plugin.description.dependencies || {};
-
-            if (Object.keys(deps).length <= 0) {
-                // We need to keep track of the standalone plugins, since they
-                // will not show up in the `edges` array. We add these standalone
-                // plugins later, after all depended plugins are loaded.
-                standalone.push(plugin);
-            }
-
-            Object.keys(deps).forEach(depName => {
-                const range = semver.validRange(deps[depName]);
-
-                if (!range) {
-                    this.addNotification("warning", "Warning", `Invalid dependency: '${plugin}' specifies '${depName}@${deps[depName]}', which is not a valid version format. Disabling it.`);
-                    plugin.valid = false;
-                    return;
-                }
-                
-                const dep = this.getPluginWithName(depName);
-                if (!dep) {
-                    this.addNotification("warning", "Warning", `Unmet dependency: '${plugin}' depends on '${depName}', which is not installed or loaded. Disabling it.`);
-                    plugin.valid = false;
-                    return;
-                }
-
-                if (!semver.satisfies(dep.description.version, range)) {
-                    this.addNotification("warning", "Warning", `Unmet dependency: '${plugin}' depends on '${depName}@${deps[depName]}' (${range}), but '${dep}' is installed. Disabling '${plugin}'.`);
-                    plugin.valid = false;
-                    return;
-                }
-
-                edges.push([plugin.name, depName]);
-            });
-
-            const nativeDeps = plugin.description.builtinDependencies || {};
-            Object.keys(nativeDeps).forEach(depName => {
-                const pl = this.getBuiltinPluginWithName(depName);
-                if (!pl) {
-                    this.addNotification("warning", "Warning", `Unmet built-in dependency: '${plugin}' depends on '${depName}', which is not installed or loaded. Disabling it.`);
-                    plugin.valid = false;
-                    return;
-                }
-
-                const range = semver.validRange(nativeDeps[depName]);
-                if (!range) {
-                    this.addNotification("warning", "Warning", `Invalid built-in dependency: '${plugin}' specifies '${depName}@${nativeDeps[depName]}', which is not a valid version format. Disabling it.`);
-                    plugin.valid = false;
-                    return;
-                }
-
-                if (!semver.satisfies(pl.info.version, range)) {
-                    this.addNotification("warning", "Warning", `Unmet built-in dependency: '${plugin}' depends on '${depName}@${nativeDeps[depName]}' (${range}), but '${pl.info.version}' is installed. Disabling '${plugin}'.`);
-                    plugin.valid = false;
-                    return;
-                }
-            });
-        });
-
-        try {
-            // Step 2: Topologically sort the array. We reverse here because toposort gives
-            // us the most depended upon plugin first. We then add all standalone plugins at
-            // the end of the array, since it doesn't matter in which way they are initialized.
-            const sortedPlugins = toposort(edges)
-                .reverse()
-                .map(name => this.getPluginWithName(name)!);
-
-            // Only add plugins that aren't yet in the list.
-            const filteredPlugins = sortedPlugins.concat(standalone.filter(p => sortedPlugins.indexOf(p) === -1));
-
-            // Disable any plugins that rely on other disabled plugins.
-            this.plugins = filteredPlugins.filter(pl => {
-                if (!pl.valid) return false;
-
-                Object.keys(pl.description.dependencies || {}).forEach(dep => {
-                    if (!this.getPluginWithName(dep)!.valid) {
-                        this.addNotification("warning", "Warning", `Disabling '${pl}' because it relies on '${dep}', which could not be loaded.`);
-                        pl.valid = false;
-                    }
-                });
-
-                return pl.valid;
-            });
-        } catch (e) {
-            // Log error to console.
-            console.log(e);
-
-            if (/^Cyclic dependency: "(.*)"$/.exec(e.message)) {
-                const culprit = /^Cyclic dependency: "(.*)"$/.exec(e.message)![1];
-
-                // toposort throws an error if there is a cycle.
-                this.addNotification("error", "Error", `Cyclic dependency: A plugin depends on \`${culprit}\`, which eventually depends back on the plugin depending on \`${culprit}\` in the first place. This is unrecoverable. Disabling Ace.`);
-                this.dormant = true;
-                return;
-            }
-
-            this.addNotification("error", "Error", `Unrecoverable error while resolving plugin dependencies: '${e}'. Ace will disable itself.`);
-            this.dormant = true;
-        }
+        
     }
 
     /**
@@ -358,7 +257,7 @@ export default class Ace {
         if (this.dormant) return;
 
         this.plugins.forEach(plugin => {
-            if (!plugin.valid) return;
+            if (plugin.state != PluginState.LOADED) return;
 
             try {
                 plugin.setup();

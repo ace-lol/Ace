@@ -56,30 +56,63 @@ export interface PluginDescription {
 }
 
 /**
+ * Represents a state that a plugin can be in.
+ */
+export enum PluginState {
+    /**
+     * The plugin is loaded, but dependencies have not yet been checked for problems.
+     */
+    LOADED,
+
+    /**
+     * The plugin was disabled by the user.
+     */
+    DISABLED,
+
+    /**
+     * The plugin was not loaded because there was a problem with its dependencies.
+     */
+    UNMET_DEPENDENCIES,
+
+    /**
+     * The plugin was successfully loaded and enabled. Its api is now available for use.
+     */
+    ENABLED
+}
+
+/**
  * This is an instance of a Plugin for Ace.
  */
 export default class Plugin {
     readonly ace: Ace;
     readonly description: PluginDescription;
 
-    valid: boolean;
-    isInitialized: boolean;
+    // The plugin instances this plugin depends on.
+    dependencies: Plugin[];
+    // All plugins that depend on this plugin.
+    dependents: Plugin[];
+
+    state: PluginState;
     private _api: any | null;
 
     constructor(ace: Ace, description: PluginDescription) {
         this.ace = ace;
         this.description = description;
-        this.valid = true;
+
+        this.dependencies = [];
+        this.dependents = [];
+
+        this.state = PluginState.LOADED;
     }
 
     /**
      * Initializes this plugin. Throws if the plugin is already initialized.
      */
     setup() {
-        if (this.isInitialized) throw `Plugin ${this} is already initialized.`;
+        if (this.state !== PluginState.LOADED) throw `Plugin ${this} can not be initialized at this point.`;
 
         this._api = this.description.setup.call(this);
-        this.isInitialized = true;
+        this.state = PluginState.LOADED;
     }
 
     /**
@@ -94,7 +127,7 @@ export default class Plugin {
      * Throws if the plugin has not yet initialized.
      */
     get api() {
-        if (!this.isInitialized) throw `Accessing API of ${this} before it has initialized.`;
+        if (this.state !== PluginState.ENABLED) throw `Accessing API of ${this}, which is not enabled.`;
         return this._api!;
     }
 
