@@ -1,6 +1,6 @@
 "use strict";
 
-const WRAPPED = (<any>window).Symbol("ace-wrapped");
+const WRAPPED = Symbol("ace-wrapped");
 
 /**
  * Utility method to wrap an existing method.
