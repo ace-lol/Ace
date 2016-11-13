@@ -96,7 +96,7 @@ export default class PluginsComponent extends Vue {
         if (this.pendingToggles.indexOf(plugin.name) !== -1) {
             const change = plugin.state === PluginState.DISABLED ? "enabled" : "disabled";
             const keep = plugin.state === PluginState.DISABLED ? "disabled" : "enabled";
-            return `This plugin will be ${change} after saving. Press again to keep the plugin ${keep}.`;
+            return `This plugin will be ${change} after a restart.<br>Click again to keep the plugin ${keep}.`;
         }
 
         if (this.canToggle(plugin)) return null;

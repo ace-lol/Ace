@@ -4,6 +4,7 @@ import Component from "../../../../util/component-decorator";
 import Vue = require("vue/dist/vue.js");
 import Promise = require("bluebird");
 
+import API from "../../api";
 import Ace from "../../../../ace";
 import PluginsComponent from "../plugins/plugins-component";
 
@@ -19,6 +20,7 @@ import "./style";
 })
 export default class RootComponent extends Vue {
     ace: Ace;
+    api: API;
     currentTab: string;
     closeListeners: (() => PromiseLike<boolean>)[];
 

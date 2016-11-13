@@ -5,6 +5,7 @@ import Promise = require("bluebird");
 import Vue = require("vue/dist/vue.js");
 
 import RootComponent from "./components/root/root-component";
+import API from "./api";
 import "./style";
 
 export default (<PluginDescription>{
@@ -16,6 +17,8 @@ export default (<PluginDescription>{
         "rcp-fe-lol-uikit": "*"
     },
     setup() {
+        const api = new API();
+
         Promise.all([
             this.getBuiltinApi("rcp-fe-lol-uikit"),
             this.getBuiltinApi("rcp-fe-app-controls")
@@ -25,14 +28,16 @@ export default (<PluginDescription>{
             const button = document.createElement("div");
             button.className = "app-controls-button app-controls-cryo-settings";
             button.textContent = "C"; // TODO
-            button.onclick = presentSettings(uikit, this.ace);
+            button.onclick = presentSettings(uikit, this.ace, api);
 
             appControls.insertBefore(button, appControls.firstChild);
         });
+
+        return api;
     }
 });
 
-const presentSettings = (uikit: any, ace: any) => () => {
+const presentSettings = (uikit: any, ace: any, api: any) => () => {
     const parent = document.createElement("lol-uikit-full-page-backdrop");
     parent.className = "ace-settings-dialog";
     
@@ -77,7 +82,7 @@ const presentSettings = (uikit: any, ace: any) => () => {
     new RootComponent({
         el,
         data: {
-            ace
+            ace, api
         }
     });
 };
