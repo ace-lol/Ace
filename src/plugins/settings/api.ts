@@ -16,7 +16,7 @@ export default class API {
 
         simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
             const data = JSON.parse(json);
-            this.localSettings = data.data;
+            this.localSettings = data.data || {};
         });
     }
 
