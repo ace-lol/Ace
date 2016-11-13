@@ -36,10 +36,10 @@ export default class API {
     }
 
     /**
-     * Gets the local copy of the settings.
+     * Gets a copy of the local settings.
      */
     get settings() {
-        return this.localSettings;
+        return (<any>Object).assign({}, this.localSettings);
     }
 
     /**

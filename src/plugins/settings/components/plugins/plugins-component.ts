@@ -41,8 +41,29 @@ export default class PluginsComponent extends Vue {
                 });
 
                 return dialog.acceptPromise.then(() => {
-                    // TODO: Save settings, restart.
-                    return true;
+                    // User pressed 'Save', change and then return.
+                    const existing = this.$parent.api.settings.disabledPlugins || [];
+
+                    // Remove or add the plugin, based on its previous state.
+                    this.pendingToggles.forEach(name => {
+                        const idx = existing.indexOf(name);
+                        if (idx !== -1) {
+                            existing.splice(idx, 1);
+                        } else {
+                            existing.push(name);
+                        }
+                    });
+
+                    // Queue changes.
+                    this.$parent.api.settings = { disabledPlugins: existing };
+
+                    return this.$parent.api.save().then(() => {
+                        // Reload the page.
+                        window.location.reload();
+
+                        // This never returns, but oh well.
+                        return true;
+                    });
                 }, () => {
                     // Not accepted. Don't close the modal.
                     return false;
@@ -63,7 +84,7 @@ export default class PluginsComponent extends Vue {
      */
     getPluginState(plugin: Plugin) {
         const state = PluginState[plugin.state].toLowerCase().replace("_", "");
-        return state[0] + state.slice(1);
+        return state[0].toUpperCase() + state.slice(1);
     }
 
     /**
@@ -91,6 +112,13 @@ export default class PluginsComponent extends Vue {
         if (plugin.name === "settings") return false;
 
         return true;
+    }
+
+    /**
+     * Returns if the specified plugin is currently active.
+     */
+    isActive(plugin: Plugin) {
+        return plugin.state === PluginState.ENABLED;
     }
 
     /**

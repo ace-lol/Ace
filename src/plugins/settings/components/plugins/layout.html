@@ -1,9 +1,10 @@
 <div>
     <lol-uikit-scrollable overflow-masks="enabled" v-show="!activeSettingsView">
-        <div class="plugin" v-for="plugin in plugins">
+        <div class="plugin" v-for="plugin in plugins" :class="{ enabled: isActive(plugin) }">
             <div class="plugin-info-header">
                 <span class="name">{{ plugin.name }}</span>
                 <span class="version">v{{ plugin.description.version }}</span>
+                <span class="status" v-if="!isActive(plugin)">(Inactive)</span>
             </div>
 
             <div class="plugin-properties">
