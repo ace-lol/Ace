@@ -1,7 +1,5 @@
 "use strict";
 
-import Promise = require("bluebird");
-
 export default function simple_fetch(url: string, cb: (contents: string) => void): Promise<string> {
     return simple_promise_fetch(url).then(x => {
         cb(x);

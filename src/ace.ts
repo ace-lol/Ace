@@ -7,7 +7,6 @@ import HookManager from "./hook-manager";
 import registerPlugins from "./plugins";
 
 import toposort = require("toposort");
-import Promise = require("bluebird");
 import semver = require("semver");
 
 import * as HTTP_HOOK from "./hook-providers/http";

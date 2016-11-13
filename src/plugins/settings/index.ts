@@ -1,7 +1,6 @@
 "use strict";
 
 import { PluginDescription } from "../../plugin";
-import Promise = require("bluebird");
 import Vue = require("vue/dist/vue.js");
 
 import RootComponent from "./components/root/root-component";
@@ -27,7 +26,7 @@ export default (<PluginDescription>{
 
             const button = document.createElement("div");
             button.className = "app-controls-button app-controls-ace-settings";
-            button.textContent = "C"; // TODO
+            button.setAttribute("action", "ace-settings");
             button.onclick = presentSettings(uikit, this.ace, api);
 
             appControls.insertBefore(button, appControls.firstChild);

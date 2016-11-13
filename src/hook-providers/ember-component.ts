@@ -2,7 +2,6 @@
 
 import { wrap_method } from "../util";
 import Ace from "../ace";
-import Promise = require("bluebird");
 
 export const NAME = "ember-component";
 const HOOKED = Symbol("ace-ember-component-hooked");

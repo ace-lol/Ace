@@ -4,8 +4,6 @@ import { PluginDescription } from "../../plugin";
 import { redefine } from "../../util";
 import getComponent from "./component";
 
-import Promise = require("bluebird");
-
 export default (<PluginDescription>{
     name: "owned-skins",
     version: "0.1.0",

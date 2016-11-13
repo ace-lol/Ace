@@ -3,7 +3,6 @@
 import { simple_promise_fetch } from "../../util";
 import { Ember, SkinsEmberComponent, Champion, Skin } from './definitions';
 import LAYOUT = require("./layout.hbs");
-import Promise = require("bluebird");
 
 import "./style";
 

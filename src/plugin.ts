@@ -4,7 +4,6 @@ import { throw_expr } from "./util";
 import { Callback } from "./hook-providers";
 import BuiltinPlugin from "./builtin-plugin";
 import Ace, { LifecycleCallback } from "./ace";
-import Promise = require("bluebird");
 
 export interface PluginDescription {
     /**

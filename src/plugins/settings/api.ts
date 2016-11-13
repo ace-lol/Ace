@@ -2,7 +2,6 @@
 
 import { simple_promise_fetch } from "../../util";
 import Plugin from "../../plugin";
-import Promise = require("bluebird");
 import Vue = require("vue/dist/vue.js");
 
 export default class API {
