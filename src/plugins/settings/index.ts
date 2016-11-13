@@ -3,7 +3,7 @@
 import { PluginDescription } from "../../plugin";
 import Promise = require("bluebird");
 
-import RootComponent from "./root-component";
+import RootComponent from "./components/root/root-component";
 
 export default (<PluginDescription>{
     name: "settings",

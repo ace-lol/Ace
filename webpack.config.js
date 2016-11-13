@@ -3,9 +3,10 @@ var webpack = require("webpack");
 module.exports = {
     module: {
         loaders: [
-            // Raw HTML and handlebars.
+            // Raw text.
             { test: /\.html$/, loader: 'raw-loader' },
             { test: /\.hbs$/, loader: 'raw-loader' },
+            { test: /\.txt$/, loader: 'raw-loader' },
 
             // TypeScript.
             { test: /\.tsx?$/, loader: 'ts-loader' },

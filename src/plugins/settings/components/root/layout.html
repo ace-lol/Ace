@@ -1,0 +1,43 @@
+<lol-uikit-dialog-frame class="ace-settings-container" orientation="bottom" frame="bordered">
+    <div class="ace-settings-header">
+        <!-- Yes, this is nested twice. lol-settings does it like this. -->
+        <div class="ace-settings-header">
+            <div class="title">
+                <span>Ace</span>
+                <span class="separator">/</span>
+                <span class="current">Plugins</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ace-settings-body">
+        <div class="navigation">
+            <div class="title">Ace</div>
+            <lol-uikit-navigation-bar type="tabbed" selectedindex="0" direction="down">
+                <lol-uikit-navigation-item active="true" @click="selectTab('plugins')">PLUGINS</lol-uikit-navigation-item>
+                <lol-uikit-navigation-item @click="selectTab('about')">ABOUT</lol-uikit-navigation-item>
+            </lol-uikit-navigation-bar>
+        </div>
+
+        <div class="content">
+            <div class="plugins" v-show="currentTab === 'plugins'">
+                <plugins></plugins>
+            </div>
+
+            <div class="about" v-show="currentTab === 'about'">
+                <lol-uikit-scrollable class="lol-settings-license" overflow-masks="enabled">
+                    <div class="title">Ace v0.1.0<br>Made with &lt;3 by molenzwiebel and contributors.</div>
+                    <div class="subtitle">Ace uses various open source projects:</div>
+                    <hr>
+                    <div class="license-text">{{ license }}</div>
+                </lol-uikit-scrollable>
+            </div>
+        </div>
+    </div>
+
+    <div class="ace-settings-footer">
+        <lol-uikit-flat-button-group type="window-popup">
+            <lol-uikit-flat-button @click="close()">DONE</lol-uikit-flat-button>
+        </lol-uikit-flat-button-group>
+    </div>
+</lol-uikit-dialog-frame>

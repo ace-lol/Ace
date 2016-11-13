@@ -15,6 +15,14 @@ declare module "*.hbs" {
 }
 
 /**
+ * Ditto for text files.
+ */
+declare module "*.txt" {
+    const contents: string;
+    export = contents;
+}
+
+/**
  * JSON files export any object.
  */
 declare module "*.json" {
