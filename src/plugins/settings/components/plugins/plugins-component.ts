@@ -16,6 +16,9 @@ import "./style";
     template: LAYOUT
 })
 export default class PluginsComponent extends Vue {
+    activeSettingsView: Vue | null;
+    activeSettingsPlugin: Plugin | null;
+
     pendingToggles: string[];
     $parent: RootComponent;
 
@@ -50,7 +53,8 @@ export default class PluginsComponent extends Vue {
 
     data() {
         return {
-            pendingToggles: []
+            pendingToggles: [],
+            activeSettingsView: null
         };
     }
 
@@ -66,7 +70,7 @@ export default class PluginsComponent extends Vue {
      * Returns if this plugin has a custom settings panel registered.
      */
     hasSettings(plugin: Plugin) {
-        return false;
+        return this.$parent.api.getSettingsView(plugin) !== null;
     }
 
     /**
@@ -113,6 +117,24 @@ export default class PluginsComponent extends Vue {
         } else {
             this.pendingToggles.push(plugin.name);
         }
+    }
+
+    /**
+     * Opens the plugin specific settings for the specified plugin.
+     */
+    openSettings(plugin: Plugin) {
+        if (!this.hasSettings(plugin)) return;
+
+        this.activeSettingsView = this.$parent.api.getSettingsView(plugin);
+        this.activeSettingsPlugin = plugin;
+    }
+
+    /**
+     * Closes the plugin specific settings.
+     */
+    closeSettings() {
+        this.activeSettingsView = null;
+        this.activeSettingsPlugin = null;
     }
 
     get plugins() {
