@@ -352,12 +352,14 @@ export default class Ace {
     private initializePlugins() {
         if (this.dormant) return;
 
+        let promiseChain = Promise.resolve();
+
         this.initializationOrder.map(x => this.getPluginWithName(x)!).forEach(plugin => {
             if (plugin.state !== PluginState.LOADED) return;
 
-            try {
-                plugin.setup();
-            } catch (e) {
+            promiseChain = promiseChain.then(() => {
+                return plugin.setup();
+            }).catch(e => {
                 // Log error to console.
                 console.error(e);
 
@@ -365,7 +367,7 @@ export default class Ace {
                 plugin.state = PluginState.ERRORED;
 
                 this.addNotification("warning", "Warning", `Error during initialization of '${plugin}': ${e}.`);
-            }
+            });
         });
     }
 

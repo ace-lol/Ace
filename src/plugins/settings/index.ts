@@ -32,7 +32,7 @@ export default (<PluginDescription>{
             appControls.insertBefore(button, appControls.firstChild);
         });
 
-        return api;
+        return api.load().then(() => api);
     }
 });
 

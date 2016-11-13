@@ -13,11 +13,6 @@ export default class API {
         this.localSettings = {};
         this.pluginSettings = {};
         this.dirty = false;
-
-        simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
-            const data = JSON.parse(json);
-            this.localSettings = data.data || {};
-        });
     }
 
     /**
@@ -47,6 +42,16 @@ export default class API {
     set settings(newSettings: any) {
         this.localSettings = (<any>Object).assign(this.localSettings, newSettings);
         this.dirty = true;
+    }
+
+    /**
+     * Loads the current settings from the server.
+     */
+    load(): Promise<void> {
+        return simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
+            const data = JSON.parse(json);
+            this.localSettings = data.data || {};
+        });
     }
 
     /**
