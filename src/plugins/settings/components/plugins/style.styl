@@ -1,0 +1,52 @@
+.ace-settings-body .plugins
+    lol-uikit-scrollable
+        height 402px
+        padding-right 5px
+
+    .plugin
+        display flex
+        flex-direction column
+        padding-bottom 10px
+
+        .plugin-info-header
+            display flex
+            flex-direction row
+            border-bottom 1px solid #1e282d
+            padding 5px 0px
+            
+            .name, .version
+                padding-left 5px                
+                color #f0e6d2
+                font-family 'LoL Display'
+                text-transform uppercase
+                font-size 16px
+
+            .version
+                color #afafae
+
+        .plugin-properties
+            padding-top 10px
+            
+            .property
+                padding 0px 5px
+                font-family 'LoL Body'
+                line-height 16px
+                font-size 14px
+
+                .name
+                    color #a09b8c
+
+                .content
+                    color #fbf6e3
+                    padding-left 5px
+        
+        .plugin-actions
+            padding-top 10px
+            display flex
+            flex-direction row
+
+            lol-uikit-flat-button-secondary
+                padding 0px 5px
+    
+    .plugin + .plugin
+        padding-top 15px
