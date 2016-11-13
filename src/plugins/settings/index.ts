@@ -2,6 +2,7 @@
 
 import { PluginDescription } from "../../plugin";
 import Promise = require("bluebird");
+import Vue = require("vue/dist/vue.js");
 
 import RootComponent from "./components/root/root-component";
 
@@ -41,6 +42,29 @@ const presentSettings = (uikit: any) => () => {
 
     parent.addEventListener("settings-close", () => {
         uikit.getModalManager().remove(modal);
+    });
+
+    // Adding a v-uikit-tooltip="'Text here'" attribute to any element will
+    // add a simple tooltip that displays the text when the user hovers over it.
+    Vue.directive("uikit-tooltip", function(el, binding) {
+        const render = () => {
+            const el = document.createElement("lol-uikit-tooltip");
+            el.appendChild(uikit.getTemplateHelper().contentBlockTooltip(undefined, binding.value, "tooltip-system"));
+            return el;
+        };
+
+        // Display it above, centered.
+        // Uikit will mirror it if it doesn't fit.
+        uikit.getTooltipManager().assign(el, render, {}, {
+            targetAnchor: {
+                x: "center",
+                y: "top"
+            },
+            tooltipAnchor: {
+                x: "center",
+                y: "bottom"
+            }
+        });
     });
 
     // Attach vue.
