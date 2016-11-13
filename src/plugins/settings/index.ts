@@ -26,7 +26,7 @@ export default (<PluginDescription>{
             const appControls = document.querySelector(".riotclient-app-controls");
 
             const button = document.createElement("div");
-            button.className = "app-controls-button app-controls-cryo-settings";
+            button.className = "app-controls-button app-controls-ace-settings";
             button.textContent = "C"; // TODO
             button.onclick = presentSettings(uikit, this.ace, api);
 

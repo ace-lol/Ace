@@ -18,6 +18,9 @@ module.exports = {
             { test: /\.css$/, loader: 'style-loader!css-loader' },
             { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader' },
             { test: /\.less$/, loader: 'style-loader!css-loader!less-loader' },
+
+            // Images
+            { test: /\.svg$/, loader: 'url-loader' }
         ],
     },
 
