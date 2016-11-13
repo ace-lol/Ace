@@ -1,0 +1,63 @@
+.ace-settings-container
+    width 700px
+
+.ace-settings-header
+    display flex
+    justify-content space-between
+    align-items center
+    height 67px
+    border-bottom 1px solid #1e282d
+    margin: 0 9px
+
+    .title
+        color #a09b8c
+        font-size 18px
+        font-weight 700
+        line-height 22px
+        letter-spacing 0.05em
+        text-transform uppercase
+        font-family 'LoL Display'
+        -webkit-font-smoothing antialiased
+
+        .current
+            color #f0e6d2
+
+        .separator
+            padding 0 3px
+
+.ace-settings-body
+    height 482px
+    display flex
+
+    .navigation
+        width 171px
+        margin-top 5px
+        flex-shrink 0
+
+        .title
+            color #a09b8c
+            font-size 12px
+            line-height 16px
+            margin 10px 0 10px 18px
+            font-family 'LoL Body'
+            letter-spacing 0.025em
+            -webkit-user-select none
+            -webkit-font-smoothing subpixel-antialiased
+
+        lol-uikit-navigation-item
+            transition all 0.3s ease
+
+        lol-uikit-navigation-item[active]
+            padding-left 19px
+            width calc(100% - 19px)
+            color #f0e6d2
+
+    .content
+        width calc(100% - 40px)
+        padding 15px 20px
+        position relative
+
+.ace-settings-footer
+    display flex
+    justify-content center
+    height 32px

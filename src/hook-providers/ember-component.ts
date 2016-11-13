@@ -5,7 +5,7 @@ import Ace from "../ace";
 import Promise = require("bluebird");
 
 export const NAME = "ember-component";
-const HOOKED = (<any>window).Symbol("ace-ember-component-hooked");
+const HOOKED = Symbol("ace-ember-component-hooked");
 
 type Callback = (Ember: any, args: any[]) => any;
 const HOOKS: { matcher: string, fun: Callback }[] = [];

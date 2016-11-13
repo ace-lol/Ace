@@ -5,7 +5,7 @@ import { wrap_method } from "../util";
 type Matcher = RegExp | string;
 type Callback = (req: XMLHttpRequest, url: string, ...args: any[]) => any;
 
-const OPTIONS = (<any>window).Symbol("ace-xmlhttprequest-options");
+const OPTIONS = Symbol("ace-xmlhttprequest-options");
 const HOOKS: { matcher: Matcher, fun: Callback }[] = [];
 
 export const NAME = "http";

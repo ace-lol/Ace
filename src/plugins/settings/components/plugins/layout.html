@@ -1,0 +1,49 @@
+<div>
+    <lol-uikit-scrollable overflow-masks="enabled" v-show="!activeSettingsView">
+        <div class="plugin" v-for="plugin in plugins" :class="{ enabled: isActive(plugin) }">
+            <div class="plugin-info-header">
+                <span class="name">{{ plugin.name }}</span>
+                <span class="version">v{{ plugin.description.version }}</span>
+                <span class="status" v-if="!isActive(plugin)">(Inactive)</span>
+            </div>
+
+            <div class="plugin-properties">
+                <div class="property">
+                    <span class="name">Description:</span>
+                    <span class="content">{{ plugin.description.description }}</span>
+                </div>
+                <div class="property">
+                    <span class="name">State:</span>
+                    <span class="content">{{ getPluginState(plugin) }}</span>
+                </div>
+                <div class="property">
+                    <span class="name">Dependencies:</span>
+                    <span class="content">{{ plugin.dependencies.length }} dependencies</span>
+                </div>
+                <div class="property">
+                    <span class="name">Built-in Dependencies:</span>
+                    <span class="content">{{ Object.keys(plugin.description.builtinDependencies || {}).length }} built-in dependencies</span>
+                </div>
+            </div>
+
+            <div class="plugin-actions">
+                <lol-uikit-flat-button-secondary @click="toggle(plugin)" :disabled="!canToggle(plugin)" v-uikit-tooltip="getToggleTooltip(plugin)">
+                    {{ getToggleText(plugin) }}
+                </lol-uikit-flat-button-secondary>
+
+                <lol-uikit-flat-button-secondary @click="openSettings(plugin)" :disabled="!hasSettings(plugin)" v-uikit-tooltip="hasSettings(plugin) ? null : 'This plugin has no settings.'">
+                    Plugin Settings
+                </lol-uikit-flat-button-secondary>
+            </div>
+        </div>
+    </lol-uikit-scrollable>
+
+    <div v-if="activeSettingsView">
+        <div class="plugin-settings-header">
+            <span>{{ activeSettingsPlugin.name }} Settings</span>
+            <lol-uikit-close-button @click="closeSettings()"></lol-uikit-close-button>
+        </div>
+
+        <component v-if="activeSettingsView" :is="activeSettingsView"></component>
+    </div>
+</div>

@@ -3,6 +3,7 @@
 import Ace from "../ace";
 import Plugin, { PluginDescription } from "../plugin";
 
+import Settings from "./settings";
 import HideMobile from "./hide-mobile";
 import NoShutdownPrompt from "./no-shutdown-prompt";
 import OwnedSkins from "./owned-skins";
@@ -11,6 +12,7 @@ import Resize from "./resize";
 import SummonerTooltip from "./summoner-tooltip";
 
 const PLUGINS: PluginDescription[] = [
+    Settings,
     HideMobile,
     NoShutdownPrompt,
     OwnedSkins,
