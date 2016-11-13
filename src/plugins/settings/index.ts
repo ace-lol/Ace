@@ -24,14 +24,14 @@ export default (<PluginDescription>{
             const button = document.createElement("div");
             button.className = "app-controls-button app-controls-cryo-settings";
             button.textContent = "C"; // TODO
-            button.onclick = presentSettings(uikit);
+            button.onclick = presentSettings(uikit, this.ace);
 
             appControls.insertBefore(button, appControls.firstChild);
         });
     }
 });
 
-const presentSettings = (uikit: any) => () => {
+const presentSettings = (uikit: any, ace: any) => () => {
     const parent = document.createElement("div");
     
     const el = document.createElement("el");
@@ -47,6 +47,12 @@ const presentSettings = (uikit: any) => () => {
     // Adding a v-uikit-tooltip="'Text here'" attribute to any element will
     // add a simple tooltip that displays the text when the user hovers over it.
     Vue.directive("uikit-tooltip", function(el, binding) {
+        // Remove the old tooltip if applicable.
+        uikit.getTooltipManager().unassign(el);
+
+        // If there is no tooltip, don't attach.
+        if (!binding.value) return;
+
         const render = () => {
             const el = document.createElement("lol-uikit-tooltip");
             el.appendChild(uikit.getTemplateHelper().contentBlockTooltip(undefined, binding.value, "tooltip-system"));
@@ -69,6 +75,9 @@ const presentSettings = (uikit: any) => () => {
 
     // Attach vue.
     new RootComponent({
-        el
+        el,
+        data: {
+            ace
+        }
     });
 };

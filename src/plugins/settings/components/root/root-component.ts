@@ -2,7 +2,9 @@
 
 import Component from "../../../../util/component-decorator";
 import Vue = require("vue/dist/vue.js");
+import Promise = require("bluebird");
 
+import Ace from "../../../../ace";
 import PluginsComponent from "../plugins/plugins-component";
 
 import LAYOUT = require("./layout.html");
@@ -16,11 +18,14 @@ import "./style";
     }
 })
 export default class RootComponent extends Vue {
+    ace: Ace;
     currentTab: string;
+    closeListeners: (() => PromiseLike<boolean>)[];
 
     data() {
         return {
             currentTab: "plugins",
+            closeListeners: [],
             license: LICENSE
         };
     }
@@ -29,7 +34,16 @@ export default class RootComponent extends Vue {
         this.currentTab = newTab;
     }
 
+    addCloseListener(fn: () => PromiseLike<boolean>) {
+        this.closeListeners.push(fn);
+    }
+
     close() {
-        this.$el.dispatchEvent(new Event("settings-close", { bubbles: true }));
+        Promise.all(this.closeListeners.map(x => x())).then(args => {
+            // if every listener returned true.
+            if (args.filter(y => !y).length === 0) {
+                this.$el.dispatchEvent(new Event("settings-close", { bubbles: true }));
+            }
+        });
     }
 }
