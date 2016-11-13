@@ -1,4 +1,4 @@
-<div>
+<div style="height: 100%">
     <lol-uikit-scrollable overflow-masks="enabled" v-show="!activeSettingsView">
         <div class="plugin" v-for="plugin in plugins" :class="{ enabled: isActive(plugin) }">
             <div class="plugin-info-header">
@@ -38,7 +38,7 @@
         </div>
     </lol-uikit-scrollable>
 
-    <div v-if="activeSettingsView">
+    <div v-if="activeSettingsView" style="height: calc(100% - 55px)">
         <div class="plugin-settings-header">
             <span>{{ activeSettingsPlugin.name }} Settings</span>
             <lol-uikit-close-button @click="closeSettings()"></lol-uikit-close-button>
