@@ -5,6 +5,7 @@ import Promise = require("bluebird");
 import Vue = require("vue/dist/vue.js");
 
 import RootComponent from "./components/root/root-component";
+import "./style";
 
 export default (<PluginDescription>{
     name: "settings",
@@ -32,16 +33,15 @@ export default (<PluginDescription>{
 });
 
 const presentSettings = (uikit: any, ace: any) => () => {
-    const parent = document.createElement("div");
+    const parent = document.createElement("lol-uikit-full-page-backdrop");
+    parent.className = "ace-settings-dialog";
     
-    const el = document.createElement("el");
+    const el = document.createElement("div");
     parent.appendChild(el);
 
-    const modal = { domNode: parent };
-    uikit.getModalManager().add(modal);
-
+    uikit.getLayerManager().addLayer(parent);
     parent.addEventListener("settings-close", () => {
-        uikit.getModalManager().remove(modal);
+        uikit.getLayerManager().removeLayer(parent);
     });
 
     // Adding a v-uikit-tooltip="'Text here'" attribute to any element will
