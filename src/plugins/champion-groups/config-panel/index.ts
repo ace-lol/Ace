@@ -118,12 +118,14 @@ export default function(ace: Ace, settings: SettingsAPI) {
             }).then(() => {
                 const name = dialog.domNode.querySelector("input").value;
                 if (!name) return; // No name, no new group.
+                if (this.groups.filter(x => x.name === name).length > 0) return; // Duplicate name, no new group.
 
                 // Accepted, add new group.
                 this.groups.push({
                     name: name,
                     championIds: []
                 });
+                if (!this.currentGroup) this.currentGroup = this.groups[0];
             }, () => { /* Do nothing. */ });
         }
 

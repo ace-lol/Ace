@@ -1,0 +1,30 @@
+// Riot does some pretty weird stuff with textures, so we manually fix them here.
+.champion-grid-header .role-icons
+    background-image none
+
+    .role
+        background-image url("/fe/lol-champ-select/images/champion-grid/role-filter-disabled.png")
+        background-size 180px
+        background-repeat no-repeat
+        flex 0 0 20px
+
+    .role.active, .role:hover
+        background-image url("/fe/lol-champ-select/images/champion-grid/role-filter-enabled.png")
+
+    .fighter
+        background-position 0 0
+
+    .tank
+        background-position -32px 0
+
+    .mage
+        background-position -64px 0
+
+    .assassin
+        background-position -96px 0
+
+    .support
+        background-position -128px 0
+
+    .marksman
+        background-position -160px 0
