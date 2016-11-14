@@ -62,6 +62,7 @@ export default function(ace: Ace, settings: SettingsAPI) {
          * Called before the settings panel is unloaded, saves the settings.
          */
         beforeDestroy() {
+            settings.settings = {}; // Notify of changes.
             settings.save();
         }
 
@@ -115,9 +116,12 @@ export default function(ace: Ace, settings: SettingsAPI) {
 
                 return dialog.acceptPromise;
             }).then(() => {
+                const name = dialog.domNode.querySelector("input").value;
+                if (!name) return; // No name, no new group.
+
                 // Accepted, add new group.
                 this.groups.push({
-                    name: dialog.domNode.querySelector("input").value,
+                    name: name,
                     championIds: []
                 });
             }, () => { /* Do nothing. */ });

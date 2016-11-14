@@ -42,9 +42,19 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
     
     const el = document.createElement("div");
     parent.appendChild(el);
-
     uikit.getLayerManager().addLayer(parent);
+
+    // Add vue instance.
+    const vueInstance = new RootComponent({
+        el,
+        data: {
+            ace, api
+        }
+    });
+
     parent.addEventListener("settings-close", () => {
+        // Destroy vue
+        vueInstance.$destroy();
         uikit.getLayerManager().removeLayer(parent);
     });
 
@@ -75,13 +85,5 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
                 y: "bottom"
             }
         });
-    });
-
-    // Attach vue.
-    new RootComponent({
-        el,
-        data: {
-            ace, api
-        }
     });
 };
