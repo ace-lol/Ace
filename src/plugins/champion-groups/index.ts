@@ -1,7 +1,15 @@
 "use strict";
 
 import { PluginDescription } from "../../plugin";
-import createConfigPanel from "./config-panel"; 
+import createConfigPanel from "./config-panel";
+
+/**
+ * Represents a group of champions that can be sorted upon.
+ */
+export interface Group {
+    name: string;
+    championIds: number[];
+}
 
 export default (<PluginDescription>{
     name: "champion-groups",
@@ -16,7 +24,7 @@ export default (<PluginDescription>{
     setup() {
         // Register settings view.
         const settingsApi = this.getPlugin("settings").api;
-        settingsApi.addSettingsView(this, createConfigPanel(settingsApi));
+        settingsApi.addSettingsView(this, createConfigPanel(this.ace, settingsApi));
 
         this.preinit("rcp-fe-lol-champ-select", () => {
             let unregister = this.hook("ember-component", Ember => {

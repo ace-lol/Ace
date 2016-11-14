@@ -1,0 +1,89 @@
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.champion-groups-settings
+    display flex
+    flex-direction row
+
+    width 100%
+    height calc(100% - 10px)
+
+    border 1px solid #1e282d
+    border-top-width 0
+
+    .sidebar
+        flex 0 140px
+        display flex
+        flex-direction column
+        border-right 1px solid #1e282d
+
+        lol-uikit-navigation-bar
+            flex 1
+            border-bottom 1px solid #1e282d
+
+        .toolbar
+            flex 0 30px
+            display flex
+
+            .plus, .remove
+                cursor pointer
+                width 30px
+                height 30px
+                -webkit-mask-size 20px 20px
+                -webkit-mask-position center
+                -webkit-mask-repeat no-repeat
+                background-color #f0e6d2
+                transition background-color 0.3s ease
+
+            .plus:hover, .remove:hover 
+                background-color #c8aa6e
+            
+            .plus
+                -webkit-mask-image url('./assets/plus.svg')
+
+            .remove
+                -webkit-mask-image url('./assets/trashcan.svg')
+
+    .contents
+        flex 1
+        position relative
+
+        .loading-spinner
+            position absolute
+            left calc(50% - 20px)
+            top calc(50% - 20px)
+
+            width 40px
+            height 40px
+
+            background-image url('/fe/lol-collections/spinner.png')
+            background-size 40px
+
+            animation spin 4000ms infinite linear
+        
+        lol-uikit-scrollable
+            padding-top 3px
+            width calc(100% - 8px)
+            display flex
+            flex-wrap wrap
+            justify-content center
+        
+        lol-uikit-champion-thumbnail
+            transition opacity 0.3s ease
+            width 60px
+            height 80px
+            margin 8px
+
+            &[disabled]
+                opacity 0.6
+
+        lol-uikit-thumbnail
+            &:hover
+                border-image-source linear-gradient(to bottom, #f0e6d2 4%, #c89b3c 100%)
+                cursor pointer
+
+        lol-uikit-thumbnail /deep/ .thumbnail-inner
+            transition -webkit-filter 0.3s ease

@@ -1,1 +1,26 @@
-<i>Test</i>
+<div class="champion-groups-settings">
+    <div class="sidebar">
+        <lol-uikit-navigation-bar type="tabbed" selectedindex="0" direction="down">
+            <lol-uikit-navigation-item :active="currentGroup === group" @click="selectGroup(group)" class="group-name" v-for="group in groups">
+                {{ group.name }}
+            </lol-uikit-navigation-item>
+        </lol-uikit-navigation-bar>
+
+        <div class="toolbar">
+            <div class="plus" @click="promptGroupAdd()"></div>
+            <div class="remove" @click="removeGroup()"></div>
+        </div>
+    </div>
+
+    <div class="contents" v-show="currentGroup">
+        <div class="loading-spinner" v-if="loading"></div>
+
+        <lol-uikit-scrollable v-show="!loading" overflow-masks="enabled">
+            <lol-uikit-champion-thumbnail @click="toggleChampion(champion)" :name="champion.name" :disabled="!isSelected(champion)" v-for="champion in champions">
+                <lol-uikit-thumbnail :disabled="!isSelected(champion)">
+                    <img :src="'/lol-game-data/assets/v1/champion-icons/' + champion.id + '.png'">
+                </lol-uikit-thumbnail>
+            </lol-uikit-champion-thumbnail>
+        </lol-uikit-scrollable>
+    </div>
+</div>
