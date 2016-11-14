@@ -7,11 +7,13 @@ import Vue = require("vue/dist/vue.js");
 export default class API {
     private localSettings: any;
     private dirty: boolean;
+    private settingListeners: (() => void)[];
     private pluginSettings: { [name: string]: Vue };
 
     constructor() {
         this.localSettings = {};
         this.pluginSettings = {};
+        this.settingListeners = [];
         this.dirty = false;
     }
 
@@ -30,6 +32,13 @@ export default class API {
     }
 
     /**
+     * Adds a new settings listener that gets triggered whenever the settings update.
+     */
+    addSettingsListener(fn: () => void) {
+        this.settingListeners.push(fn);
+    }
+
+    /**
      * Gets a copy of the local settings.
      */
     get settings() {
@@ -42,6 +51,7 @@ export default class API {
     set settings(newSettings: any) {
         this.localSettings = (<any>Object).assign(this.localSettings, newSettings);
         this.dirty = true;
+        this.settingListeners.forEach(f => f());
     }
 
     /**
