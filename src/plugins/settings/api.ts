@@ -41,14 +41,32 @@ export default class API {
     /**
      * Gets a copy of the local settings.
      */
-    get settings() {
+    getSettings(): {} {
         return (<any>Object).assign({}, this.localSettings);
     }
 
     /**
-     * Sets the local copy of the settings. This performs a diff and only changes the changed properties.
+     * Gets the object at the specified "path", or the default if it does not exist.
+     * This method is intended as a helper for default settings.
      */
-    set settings(newSettings: any) {
+    get<T>(path: string, defaultValue: T): T {
+        const parts = path.split(".");
+        if (parts.length === 0) return defaultValue;
+
+        let current: any = this.getSettings();
+        for (let i = 0; i < parts.length; i++) {
+            if (typeof current !== "object") return defaultValue;
+            current = current[parts[i]];
+        }
+
+        return typeof current !== "object" ? defaultValue : current; 
+    }
+
+    /**
+     * Merges the provided settings with the current settings.
+     * Prioritizes new settings over old settings. Does not save.
+     */
+    mergeSettings(newSettings: {}) {
         this.localSettings = (<any>Object).assign(this.localSettings, newSettings);
         this.dirty = true;
         this.settingListeners.forEach(f => f());

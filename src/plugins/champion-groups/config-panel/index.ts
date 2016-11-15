@@ -14,16 +14,6 @@ import "./style";
  * Wrapped in a closure so we get access to the settings api.
  */
 export default function(ace: Ace, settings: SettingsAPI) {
-    // Create default structure if it doesn't exist.
-    if (!settings.settings.championGroups) {
-        // this merges.
-        settings.settings = {
-            championGroups: {
-                groups: []
-            }
-        };
-    }
-
     @Component({
         template: LAYOUT
     })
@@ -35,7 +25,8 @@ export default function(ace: Ace, settings: SettingsAPI) {
         loading: boolean;
 
         data() {
-            const groups = settings.settings.championGroups.groups;
+            // Clone the groups array.
+            const groups = settings.get("championGroups.groups", []).slice();
 
             return {
                 groups,
@@ -62,7 +53,7 @@ export default function(ace: Ace, settings: SettingsAPI) {
          * Called before the settings panel is unloaded, saves the settings.
          */
         beforeDestroy() {
-            settings.settings = {}; // Notify of changes.
+            settings.mergeSettings({ championGroups: { groups: this.groups } });
             settings.save();
         }
 

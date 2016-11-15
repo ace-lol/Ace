@@ -57,7 +57,7 @@ const Mixin = (Ember: any, settingsApi: SettingsAPI) => ({
             displayName: group
         }));
 
-        const customGroups: Group[] = (settingsApi.settings.championGroups || {}).groups || [];
+        const customGroups: Group[] = settingsApi.get("championGroups.groups", []);
         groups = groups.concat(customGroups.map(group => Ember.Object.create({
             name: group.name + " _custom",
             value: false,
@@ -84,7 +84,7 @@ const Mixin = (Ember: any, settingsApi: SettingsAPI) => ({
             }
 
             // Custom matcher, find the matching group.
-            const customGroups: Group[] = (settingsApi.settings.championGroups || {}).groups || [];
+            const customGroups: Group[] = settingsApi.get("championGroups.groups", []);
             const group = customGroups.filter(x => x.name === name.slice(0, -8))[0];
 
             // Check if the champion was in the Group.
