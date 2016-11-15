@@ -21,6 +21,8 @@ export default function(ace: Ace, settings: SettingsAPI) {
         groups: Group[];
         currentGroup: Group | null;
 
+        showDefaultGroups: boolean;
+
         champions: { name: string, id: number }[];
         loading: boolean;
 
@@ -31,6 +33,7 @@ export default function(ace: Ace, settings: SettingsAPI) {
             return {
                 groups,
                 currentGroup: groups[0] || null,
+                showDefaultGroups: settings.get("championGroups.showDefault", true),
                 champions: [],
                 loading: true
             };
@@ -53,7 +56,12 @@ export default function(ace: Ace, settings: SettingsAPI) {
          * Called before the settings panel is unloaded, saves the settings.
          */
         beforeDestroy() {
-            settings.mergeSettings({ championGroups: { groups: this.groups } });
+            settings.mergeSettings({
+                championGroups: {
+                    groups: this.groups,
+                    showDefault: this.showDefaultGroups
+                }
+            });
             settings.save();
         }
 
@@ -92,7 +100,7 @@ export default function(ace: Ace, settings: SettingsAPI) {
             ace.getBuiltinApi("rcp-fe-lol-uikit").then(uikit => {
                 const contents = uikit.getTemplateHelper().contentBlockDialog(
                     "Add new group",
-                    `<lol-uikit-flat-input><input type="text" placeholder="My Custom Group"></lol-uikit-flat-input>`
+                    `<lol-uikit-flat-input><input type="text" placeholder="Group name..."></lol-uikit-flat-input>`
                 );
                 
                 dialog = uikit.getModalManager().add({

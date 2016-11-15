@@ -50,12 +50,13 @@ const Mixin = (Ember: any, settingsApi: SettingsAPI) => ({
     }),
 
     roleFilters: Ember.computed("needsUpdate", function() {
+        console.debug("update " + settingsApi.get("championGroups.showDefault", true));
         // This is the default behaviour in rcp-fe-lol-champ-select.
-        let groups = DEFAULT_GROUPS.map(group => Ember.Object.create({
+        let groups = settingsApi.get("championGroups.showDefault", true) ? DEFAULT_GROUPS.map(group => Ember.Object.create({
             name: group,
             value: false,
             displayName: group
-        }));
+        })) : [];
 
         const customGroups: Group[] = settingsApi.get("championGroups.groups", []);
         groups = groups.concat(customGroups.map(group => Ember.Object.create({
@@ -76,7 +77,7 @@ const Mixin = (Ember: any, settingsApi: SettingsAPI) => ({
 
         // Changes start here.
         const matchers: ((champ: any) => boolean)[] = selected.map((name: string) => {
-            if (!name.indexOf(" _custom")) {
+            if (name.indexOf(" _custom") === -1) {
                 // Normal matcher, check if the champion has the primary role.
                 return function(champ: any) {
                     return champ && champ.get("roles.0") === name;

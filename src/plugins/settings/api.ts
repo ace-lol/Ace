@@ -59,7 +59,7 @@ export default class API {
             current = current[parts[i]];
         }
 
-        return typeof current !== "object" ? defaultValue : current; 
+        return typeof current === "undefined" ? defaultValue : current; 
     }
 
     /**
