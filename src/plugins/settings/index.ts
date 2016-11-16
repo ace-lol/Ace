@@ -44,20 +44,6 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
     parent.appendChild(el);
     uikit.getLayerManager().addLayer(parent);
 
-    // Add vue instance.
-    const vueInstance = new RootComponent({
-        el,
-        data: {
-            ace, api
-        }
-    });
-
-    parent.addEventListener("settings-close", () => {
-        // Destroy vue
-        vueInstance.$destroy();
-        uikit.getLayerManager().removeLayer(parent);
-    });
-
     // Adding a v-uikit-tooltip="'Text here'" attribute to any element will
     // add a simple tooltip that displays the text when the user hovers over it.
     Vue.directive("uikit-tooltip", function(el, binding) {
@@ -85,5 +71,19 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
                 y: "bottom"
             }
         });
+    });
+
+    // Add vue instance.
+    const vueInstance = new RootComponent({
+        el,
+        data: {
+            ace, api
+        }
+    });
+
+    parent.addEventListener("settings-close", () => {
+        // Destroy vue
+        vueInstance.$destroy();
+        uikit.getLayerManager().removeLayer(parent);
     });
 };
