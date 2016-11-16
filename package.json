@@ -29,6 +29,7 @@
   "dependencies": {
     "@types/semver": "^5.3.30",
     "@types/vue": "^1.0.31",
+    "open-iconic": "^1.1.1",
     "semver": "^5.3.0",
     "toposort": "^1.0.0",
     "vue": "^2.0.5"
