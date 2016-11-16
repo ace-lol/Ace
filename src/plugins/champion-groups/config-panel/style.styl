@@ -4,6 +4,9 @@
     100% { transform: rotate(360deg); }
 }
 
+// Import ICONS
+@import "../common"
+
 .champion-groups-default
     padding 10px 5px
 
@@ -89,3 +92,22 @@
 
         lol-uikit-thumbnail /deep/ .thumbnail-inner
             transition -webkit-filter 0.3s ease
+
+// Generate styles for the picker.
+for icon in ICONS
+    lol-uikit-dropdown-option[value={icon}]
+        & > span
+            position absolute
+            line-height 30px
+            left 40px
+
+        & > .champion-groups-dropdown-icon
+            position absolute
+            margin 7.5px
+            width 15px
+            height 15px
+            -webkit-mask-image url("~open-iconic/svg/" icon ".svg")
+            -webkit-mask-position center
+            -webkit-mask-size cover
+            -webkit-mask-repeat no-repeat
+            background-color #a09b8c

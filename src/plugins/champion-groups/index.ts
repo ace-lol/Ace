@@ -11,6 +11,7 @@ import "./style";
  */
 export interface Group {
     name: string;
+    icon: string;
     championIds: number[];
 }
 
@@ -64,6 +65,14 @@ const Mixin = (Ember: any, settingsApi: SettingsAPI) => ({
             value: false,
             displayName: group.name
         })));
+
+        // Add custom icons.
+        Ember.run.scheduleOnce('afterRender', this, function() {
+            customGroups.forEach(group => {
+                const el: Element = this.$(`.role${group.name.split(" ").map(x => "." + x).join()}._custom`)[0];
+                el.setAttribute("icon", group.icon);
+            });
+        });
         
         return Ember.A(groups);
     }),

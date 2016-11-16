@@ -28,3 +28,20 @@
 
     .marksman
         background-position -160px 0
+
+    ._custom
+        background-image none
+        background-color #5B5A56
+        -webkit-mask-position center 2px
+        -webkit-mask-repeat no-repeat
+        -webkit-mask-size 18px
+
+    ._custom.active, ._custom:hover
+        background-color #EDE4D0
+
+    @import "./common"
+
+    // Generate classes for all the custom icons.
+    for icon in ICONS
+        ._custom[icon={icon}]
+            -webkit-mask-image url("~open-iconic/svg/" icon ".svg")
