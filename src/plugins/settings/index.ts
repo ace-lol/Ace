@@ -32,7 +32,7 @@ export default (<PluginDescription>{
             appControls.insertBefore(button, appControls.firstChild);
         });
 
-        return api;
+        return api.load().then(() => api);
     }
 });
 
@@ -42,11 +42,7 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
     
     const el = document.createElement("div");
     parent.appendChild(el);
-
     uikit.getLayerManager().addLayer(parent);
-    parent.addEventListener("settings-close", () => {
-        uikit.getLayerManager().removeLayer(parent);
-    });
 
     // Adding a v-uikit-tooltip="'Text here'" attribute to any element will
     // add a simple tooltip that displays the text when the user hovers over it.
@@ -77,11 +73,17 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
         });
     });
 
-    // Attach vue.
-    new RootComponent({
+    // Add vue instance.
+    const vueInstance = new RootComponent({
         el,
         data: {
             ace, api
         }
+    });
+
+    parent.addEventListener("settings-close", () => {
+        // Destroy vue
+        vueInstance.$destroy();
+        uikit.getLayerManager().removeLayer(parent);
     });
 };

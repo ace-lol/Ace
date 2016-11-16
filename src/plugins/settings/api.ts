@@ -7,17 +7,14 @@ import Vue = require("vue/dist/vue.js");
 export default class API {
     private localSettings: any;
     private dirty: boolean;
+    private settingListeners: (() => void)[];
     private pluginSettings: { [name: string]: Vue };
 
     constructor() {
         this.localSettings = {};
         this.pluginSettings = {};
+        this.settingListeners = [];
         this.dirty = false;
-
-        simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
-            const data = JSON.parse(json);
-            this.localSettings = data.data || {};
-        });
     }
 
     /**
@@ -35,18 +32,54 @@ export default class API {
     }
 
     /**
+     * Adds a new settings listener that gets triggered whenever the settings update.
+     */
+    addSettingsListener(fn: () => void) {
+        this.settingListeners.push(fn);
+    }
+
+    /**
      * Gets a copy of the local settings.
      */
-    get settings() {
+    getSettings(): {} {
         return (<any>Object).assign({}, this.localSettings);
     }
 
     /**
-     * Sets the local copy of the settings. This performs a diff and only changes the changed properties.
+     * Gets the object at the specified "path", or the default if it does not exist.
+     * This method is intended as a helper for default settings.
      */
-    set settings(newSettings: any) {
+    get<T>(path: string, defaultValue: T): T {
+        const parts = path.split(".");
+        if (parts.length === 0) return defaultValue;
+
+        let current: any = this.getSettings();
+        for (let i = 0; i < parts.length; i++) {
+            if (typeof current !== "object") return defaultValue;
+            current = current[parts[i]];
+        }
+
+        return typeof current === "undefined" ? defaultValue : current; 
+    }
+
+    /**
+     * Merges the provided settings with the current settings.
+     * Prioritizes new settings over old settings. Does not save.
+     */
+    mergeSettings(newSettings: {}) {
         this.localSettings = (<any>Object).assign(this.localSettings, newSettings);
         this.dirty = true;
+        this.settingListeners.forEach(f => f());
+    }
+
+    /**
+     * Loads the current settings from the server.
+     */
+    load(): Promise<void> {
+        return simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
+            const data = JSON.parse(json);
+            this.localSettings = data.data || {};
+        });
     }
 
     /**

@@ -50,8 +50,12 @@ export interface PluginDescription {
      * 
      * Any value this plugin exports is regarded as its public API,
      * which is then accessible to any other plugins.
+     * 
+     * *Note*: Ace will wait until your promise resolves before continuing loading
+     * plugins. Make sure to not do any latency-intensive operations if you decide
+     * to return a promise, as they will increase the startup time.
      */
-    setup: (this: Plugin) => any;
+    setup: (this: Plugin) => any | Promise<any>;
 }
 
 /**
@@ -122,11 +126,15 @@ export default class Plugin {
     /**
      * Initializes this plugin. Throws if the plugin is already initialized.
      */
-    setup() {
+    setup(): Promise<any> {
         if (this._state !== PluginState.LOADED) throw `Plugin ${this} can not be initialized at this point.`;
 
-        this._api = this.description.setup.call(this);
-        this._state = PluginState.ENABLED;
+        const api = this.description.setup.call(this);
+        return (api && api.then ? api : Promise.resolve(api)).then((api: any) => {
+            this._api = api;
+            this._state = PluginState.ENABLED;
+            return api;
+        });
     }
 
     /**
