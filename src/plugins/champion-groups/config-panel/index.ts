@@ -126,6 +126,37 @@ export default function(ace: Ace, settings: SettingsAPI) {
         }
 
         /**
+         * Shows the prompt that allows the user to edit the group metadata.
+         */
+        editGroup() {
+            if (!this.currentGroup) return;
+
+            const contents = `
+                <lol-uikit-flat-input>
+                    <input type="text" value="${this.currentGroup.name}">
+                </lol-uikit-flat-input>
+
+                <lol-uikit-framed-dropdown style="padding-top: 10px;">
+                    ${ICONS.map(icon => `<lol-uikit-dropdown-option value="${icon}" ${icon === this.currentGroup!.icon ? "selected" : ""}>
+                        <div class="champion-groups-dropdown-icon"></div>
+                        <span>${icon}</span>
+                    </lol-uikit-dropdown-option>`).join()}
+                </lol-uikit-framed-dropdown>
+            `;
+
+            presentDialog(ace, "Edit group", contents, "Save", "Cancel").then(domNode => {
+                const name = domNode.querySelector("input").value;
+                if (!name) return; // No name, no new group.
+
+                const icon = domNode.querySelector("lol-uikit-dropdown-option[selected]").getAttribute("value")!;
+
+                // Accepted, add new group.
+                this.currentGroup!.name = name;
+                this.currentGroup!.icon = icon;
+            }, () => { /* Do nothing. */ });
+        }
+
+        /**
          * Removes the currently selected group, if one is selected.
          */
         removeGroup() {

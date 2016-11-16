@@ -51,7 +51,6 @@ const Mixin = (Ember: any, settingsApi: SettingsAPI) => ({
     }),
 
     roleFilters: Ember.computed("needsUpdate", function() {
-        console.debug("update " + settingsApi.get("championGroups.showDefault", true));
         // This is the default behaviour in rcp-fe-lol-champ-select.
         let groups = settingsApi.get("championGroups.showDefault", true) ? DEFAULT_GROUPS.map(group => Ember.Object.create({
             name: group,

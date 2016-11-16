@@ -33,7 +33,7 @@
             flex 0 30px
             display flex
 
-            .plus, .remove
+            .plus, .remove, .edit
                 cursor pointer
                 width 30px
                 height 30px
@@ -43,11 +43,14 @@
                 background-color #f0e6d2
                 transition background-color 0.3s ease
 
-            .plus:hover, .remove:hover 
+            .plus:hover, .remove:hover, .edit:hover
                 background-color #c8aa6e
             
             .plus
                 -webkit-mask-image url('~open-iconic/svg/plus.svg')
+
+            .edit
+                -webkit-mask-image url('~open-iconic/svg/pencil.svg')
 
             .remove
                 -webkit-mask-image url('~open-iconic/svg/trash.svg')
@@ -55,6 +58,8 @@
     .contents
         flex 1
         position relative
+        height calc(100% - 10px)
+        padding-top 5px
 
         .loading-spinner
             position absolute
@@ -72,6 +77,7 @@
         lol-uikit-scrollable
             padding-top 3px
             width calc(100% - 8px)
+            height 100%
             display flex
             flex-wrap wrap
             justify-content center
