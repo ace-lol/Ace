@@ -4,6 +4,7 @@ import Ace from "../ace";
 import Plugin, { PluginDescription } from "../plugin";
 
 import Settings from "./settings";
+import Changelog from "./changelog";
 import HideMobile from "./hide-mobile";
 import NoShutdownPrompt from "./no-shutdown-prompt";
 import OwnedSkins from "./owned-skins";
@@ -14,6 +15,7 @@ import ChampionGroups from "./champion-groups";
 
 const PLUGINS: PluginDescription[] = [
     Settings,
+    Changelog,
     HideMobile,
     NoShutdownPrompt,
     OwnedSkins,
