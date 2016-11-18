@@ -10,7 +10,6 @@ import NoShutdownPrompt from "./no-shutdown-prompt";
 import OwnedSkins from "./owned-skins";
 import SummonerIconDescription from "./summoner-icon-description";
 import Resize from "./resize";
-import SummonerTooltip from "./summoner-tooltip";
 import ChampionGroups from "./champion-groups";
 
 const PLUGINS: PluginDescription[] = [
@@ -21,7 +20,6 @@ const PLUGINS: PluginDescription[] = [
     OwnedSkins,
     SummonerIconDescription,
     Resize,
-    SummonerTooltip,
     ChampionGroups
 ];
 

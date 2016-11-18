@@ -61,11 +61,14 @@
         height calc(100% - 10px)
         padding-top 5px
 
-        .loading-spinner
-            position absolute
-            left calc(50% - 20px)
-            top calc(50% - 20px)
+        .centered
+            width 100%
+            height 100%
+            display flex
+            justify-content center
+            align-items center
 
+        .loading-spinner
             width 40px
             height 40px
 
@@ -73,6 +76,12 @@
             background-size 40px
 
             animation spin 4000ms infinite linear
+
+        .error
+            font-family 'LoL Body'
+            color #a09b8c
+            max-width 70%
+            text-align center
         
         lol-uikit-scrollable
             padding-top 3px

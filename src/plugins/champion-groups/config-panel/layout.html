@@ -20,7 +20,10 @@
         </div>
 
         <div class="contents" v-show="currentGroup">
-            <div class="loading-spinner" v-if="loading"></div>
+            <div class="centered" v-if="loading || errored">
+                <div class="loading-spinner" v-if="loading"></div>
+                <div class="error" v-if="errored">You need to be logged in to edit champion groups. Sorry :(</div>
+            </div>
 
             <lol-uikit-scrollable v-if="!loading && currentGroup" overflow-masks="enabled">
                 <lol-uikit-champion-thumbnail @click="toggleChampion(champion)" :name="champion.name" :disabled="!isSelected(champion)" v-for="champion in champions">

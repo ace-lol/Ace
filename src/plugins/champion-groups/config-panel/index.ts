@@ -24,7 +24,10 @@ export default function(ace: Ace, settings: SettingsAPI) {
         showDefaultGroups: boolean;
 
         champions: { name: string, id: number }[];
+
         loading: boolean;
+        errored: boolean;
+        error: string | null;
 
         data() {
             // Clone the groups array.
@@ -35,7 +38,9 @@ export default function(ace: Ace, settings: SettingsAPI) {
                 currentGroup: groups[0] || null,
                 showDefaultGroups: settings.get("championGroups.showDefault", true),
                 champions: [],
-                loading: true
+                loading: true,
+                errored: false,
+                error: null
             };
         }
 
@@ -46,7 +51,11 @@ export default function(ace: Ace, settings: SettingsAPI) {
             simple_promise_fetch("/lol-login/v1/session").then(data => {
                 const summonerId = JSON.parse(data).summonerId;
                 return simple_promise_fetch(`/lol-collections/v1/inventories/${summonerId}/champions`);
+            }, () => {
+                this.errored = true;
+                this.loading = false;
             }).then(championJson => {
+                if (!championJson) return;
                 this.champions = JSON.parse(championJson).sort(sortAlphabetically);
                 this.loading = false;
             });

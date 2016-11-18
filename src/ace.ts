@@ -89,7 +89,7 @@ export default class Ace {
      */
     registerPlugin(plugin: Plugin) {
         if (this.plugins.filter(x => x.name === plugin.name).length) {
-            this.addNotification("warning", "Warning", "Duplicate plugin '${plugin.name}'. Ignoring the second one.");
+            this.addNotification("warning", "Warning", `Duplicate plugin '${plugin.name}'. Ignoring the second one.`);
         }
         this.plugins.push(plugin);
     }

@@ -82,8 +82,7 @@ export default class PluginsComponent extends Vue {
      * Returns a string signifying the state the plugin is currently in.
      */
     getPluginState(plugin: Plugin) {
-        const state = PluginState[plugin.state].toLowerCase().replace("_", "");
-        return state[0].toUpperCase() + state.slice(1);
+        return PluginState[plugin.state].toLowerCase().split("_").map(x => x[0].toUpperCase() + x.slice(1)).join(" ");
     }
 
     /**
