@@ -47,4 +47,8 @@ export default class RootComponent extends Vue {
             }
         });
     }
+
+    get aceVersion() {
+        return `v${window.ACE_VERSION}`;
+    }
 }
