@@ -6,7 +6,7 @@ import getComponent from "./component";
 
 export default (<PluginDescription>{
     name: "owned-skins",
-    version: "1.0.0",
+    version: "1.0.1",
     description: "Shows your owned skins in the `Collections` tab.",
     
     builtinDependencies: {
