@@ -4,6 +4,7 @@
 export interface ChampionMastery {
     championId: number;
     championPoints: number;
+    championLevel: number;
 }
 
 export interface Skin {
