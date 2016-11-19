@@ -11,6 +11,7 @@ import OwnedSkins from "./owned-skins";
 import SummonerIconDescription from "./summoner-icon-description";
 import Resize from "./resize";
 import ChampionGroups from "./champion-groups";
+import ClassicCurrency from "./classic-currency";
 
 const PLUGINS: PluginDescription[] = [
     Settings,
@@ -20,7 +21,8 @@ const PLUGINS: PluginDescription[] = [
     OwnedSkins,
     SummonerIconDescription,
     Resize,
-    ChampionGroups
+    ChampionGroups,
+    ClassicCurrency
 ];
 
 export default function register(ace: Ace) {

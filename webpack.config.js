@@ -20,7 +20,8 @@ module.exports = {
             { test: /\.less$/, loader: 'style-loader!css-loader!less-loader' },
 
             // Images
-            { test: /\.svg$/, loader: 'url-loader' }
+            { test: /\.svg$/, loader: 'url-loader' },
+            { test: /\.png$/, loader: 'url-loader' }
         ],
     },
 
