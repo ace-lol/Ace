@@ -1,7 +1,7 @@
 "use strict";
 
 import { PluginDescription } from "../../plugin";
-import Vue = require("vue/dist/vue.js");
+import Vue = require("vue/dist/vue.min.js");
 
 import RootComponent from "./components/root/root-component";
 import API from "./api";
@@ -9,11 +9,11 @@ import "./style";
 
 export default (<PluginDescription>{
     name: "settings",
-    version: "0.1.0",
+    version: "1.0.0",
     description: "Adds settings and plugin management for Ace plugins.",
     builtinDependencies: {
-        "rcp-fe-app-controls": "0.0.x",
-        "rcp-fe-lol-uikit": "*"
+        "rcp-fe-app-controls": "~0.0.384",
+        "rcp-fe-lol-uikit": "~0.3.194"
     },
     setup() {
         const api = new API();

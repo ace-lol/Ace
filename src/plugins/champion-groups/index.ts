@@ -17,13 +17,13 @@ export interface Group {
 
 export default (<PluginDescription>{
     name: "champion-groups",
-    version: "0.1.0",
-    description: "Custom champion select champion filters.",
+    version: "1.0.0",
+    description: "Adds custom champion group filters for champion select.",
     dependencies: {
-        "settings": "0.1.x"
+        "settings": "~1.0.0"
     },
     builtinDependencies: {
-        "rcp-fe-lol-champ-select": "1.0.x"
+        "rcp-fe-lol-champ-select": "~1.0.471"
     },
     setup() {
         // Register settings view.

@@ -4,7 +4,7 @@
  * This code has been largely adapted from https://github.com/vuejs/vue-class-component/tree/master/src,
  * but changed to use Vue 2.0 and to remove some redundant options. Credit goes to Evan You.
  */
-import Vue = require("vue/dist/vue.js");
+import Vue = require("vue/dist/vue.min.js");
 
 const lifetimeHooks = [
     'data',

@@ -1,7 +1,7 @@
 "use strict";
 
 import Component from "../../../../util/component-decorator";
-import Vue = require("vue/dist/vue.js");
+import Vue = require("vue/dist/vue.min.js");
 
 import API from "../../api";
 import Ace from "../../../../ace";

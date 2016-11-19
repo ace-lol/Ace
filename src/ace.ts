@@ -73,12 +73,17 @@ export default class Ace {
             this.hookManager.registerHookProvider(EMBER_COMPONENT_HOOK);
 
             this.resolvePluginDependencies();
-            this.initializePlugins();
+            this.initializePlugins().then(() => {
+                const initializedCount = this.plugins.filter(x => x.state === PluginState.ENABLED).length;
+                if (initializedCount !== this.plugins.length) {
+                    this.addNotification("warning", "Ace Warning", `${this.plugins.length - initializedCount} plugin(s) were not loaded because of version mismatches or other errors during initialization.`);
+                }
+            });
         }).catch(e => {
             // Log error to console.
             console.error(e);
 
-            this.addNotification("error", "Error", `Unrecoverable error initializing Ace: '${e}'. Ace will disable itself.`);
+            this.addNotification("error", "Ace Error", `Unrecoverable error initializing Ace: '${e}'. Ace will disable itself.`);
             this.dormant = true;
             return;
         });
@@ -89,7 +94,7 @@ export default class Ace {
      */
     registerPlugin(plugin: Plugin) {
         if (this.plugins.filter(x => x.name === plugin.name).length) {
-            this.addNotification("warning", "Warning", `Duplicate plugin '${plugin.name}'. Ignoring the second one.`);
+            this.addNotification("warning", "Ace Warning", `Duplicate plugin '${plugin.name}'. Ignoring the second one.`);
         }
         this.plugins.push(plugin);
     }
@@ -138,7 +143,7 @@ export default class Ace {
             this.builtinPlugins.forEach(plugin => {
                 plugin.dependencies = plugin.info.dependencies.map(x => {
                     const dep = this.getBuiltinPluginWithName(x.fullName);
-                    if (!dep) this.addNotification("warning", "Warning", `Native plugin ${plugin.info.fullName} specified missing dependency ${x.fullName}.`);
+                    if (!dep) this.addNotification("warning", "Ace Warning", `Native plugin ${plugin.info.fullName} specified missing dependency ${x.fullName}.`);
                     return dep!;
                 });
             });
@@ -146,7 +151,7 @@ export default class Ace {
             // Log error to console.
             console.error(e);
 
-            this.addNotification("error", "Error", `Unrecoverable error while communicating with server: ${e}. Ace will disable itself.`);
+            this.addNotification("error", "Ace Error", `Unrecoverable error while communicating with server: ${e}. Ace will disable itself.`);
             this.dormant = true;
         });
     }
@@ -187,7 +192,7 @@ export default class Ace {
 
         const nativePlugin = this.getBuiltinPluginWithName(entry.pluginName);
         if (!nativePlugin) {
-            this.addNotification("error", "Error", `Ace encountered a native plugin it didn't recognize and cannot continue. Ace will disable itself.`);
+            this.addNotification("error", "Ace Error", `Ace encountered a native plugin it didn't recognize and cannot continue. Ace will disable itself.`);
             this.dormant = true;
             return;
         }
@@ -342,15 +347,15 @@ export default class Ace {
             // Just initialize non-dependents/depended plugins normally.
             this.initializationOrder = this.plugins.filter(x => x.state === PluginState.LOADED && x.dependents.length === 0 && x.dependencies.length === 0).map(x => x.name);
 
-            this.addNotification("warning", "Warning", "Cyclic dependency found. Disabling all plugins that depend on something.");
+            this.addNotification("warning", "Ace Warning", "Cyclic dependency found. Disabling all plugins that depend on something.");
         }
     }
 
     /**
      * Simply calls initialize on every Plugin instance.
      */
-    private initializePlugins() {
-        if (this.dormant) return;
+    private initializePlugins(): Promise<void> {
+        if (this.dormant) return Promise.resolve();
 
         let promiseChain = Promise.resolve();
 
@@ -366,9 +371,11 @@ export default class Ace {
                 // Disable plugins that depend on this one.
                 plugin.state = PluginState.ERRORED;
 
-                this.addNotification("warning", "Warning", `Error during initialization of '${plugin}': ${e}.`);
+                this.addNotification("warning", "Ace Warning", `Error during initialization of '${plugin}': ${e}.`);
             });
         });
+
+        return promiseChain;
     }
 
     /**

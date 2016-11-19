@@ -2,7 +2,7 @@
 
 import { simple_promise_fetch } from "../../util";
 import Plugin from "../../plugin";
-import Vue = require("vue/dist/vue.js");
+import Vue = require("vue/dist/vue.min.js");
 
 export default class API {
     private localSettings: any;

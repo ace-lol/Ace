@@ -1,6 +1,6 @@
 "use strict";
 
-import Vue = require("vue/dist/vue.js");
+import Vue = require("vue/dist/vue.min.js");
 import Component from "../../../util/component-decorator";
 import SettingsAPI from "../../settings/api";
 import Ace from "../../../ace";
@@ -109,7 +109,7 @@ export default function(ace: Ace, settings: SettingsAPI) {
                     <input type="text" placeholder="Group name...">
                 </lol-uikit-flat-input>
 
-                <lol-uikit-framed-dropdown style="padding-top: 10px;">
+                <lol-uikit-framed-dropdown style="padding-top: 10px;" class="icon-dropdown">
                     ${ICONS.map((icon, i) => `<lol-uikit-dropdown-option value="${icon}" ${i === 0 ? "selected" : ""}>
                         <div class="champion-groups-dropdown-icon"></div>
                         <span>${icon}</span>
@@ -145,7 +145,7 @@ export default function(ace: Ace, settings: SettingsAPI) {
                     <input type="text" value="${this.currentGroup.name}">
                 </lol-uikit-flat-input>
 
-                <lol-uikit-framed-dropdown style="padding-top: 10px;">
+                <lol-uikit-framed-dropdown style="padding-top: 10px;" class="icon-dropdown">
                     ${ICONS.map(icon => `<lol-uikit-dropdown-option value="${icon}" ${icon === this.currentGroup!.icon ? "selected" : ""}>
                         <div class="champion-groups-dropdown-icon"></div>
                         <span>${icon}</span>

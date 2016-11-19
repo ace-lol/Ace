@@ -19,13 +19,13 @@ interface ChangelogSettings {
 
 export default (<PluginDescription>{
     name: "changelog",
-    version: "0.1.0",
+    version: "1.0.0",
     description: "Displays Ace changelogs and the initial welcome message.",
     builtinDependencies: {
-        "rcp-fe-lol-uikit": "*"
+        "rcp-fe-lol-uikit": "~0.3.194"
     },
     dependencies: {
-        "settings": "0.1.x"
+        "settings": "~1.0.0"
     },
     setup() {
         const settings: SettingsAPI = this.getPlugin("settings").api;

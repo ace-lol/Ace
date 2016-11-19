@@ -6,13 +6,13 @@ import getComponent from "./component";
 
 export default (<PluginDescription>{
     name: "owned-skins",
-    version: "0.1.0",
+    version: "1.0.0",
     description: "Shows your owned skins in the `Collections` tab.",
     
     builtinDependencies: {
-        "rcp-fe-lol-collections": "1.0.x",
-        "rcp-fe-lol-champion-details": "0.0.x",
-        "rcp-fe-lol-uikit": "*"
+        "rcp-fe-lol-collections": "~1.0.56",
+        "rcp-fe-lol-champion-details": "~0.0.139",
+        "rcp-fe-lol-uikit": "~0.3.194"
     },
 
     setup() {

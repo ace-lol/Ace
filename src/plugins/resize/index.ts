@@ -6,8 +6,11 @@ import "./style";
 
 export default (<PluginDescription>{
     name: "resize",
-    version: "0.1.0",
+    version: "1.0.0",
     description: "Allows you to resize the client, as long as it keeps its standard aspect ratio.",
+    builtinDependencies: {
+        "rcp-fe-lol-uikit": "~0.3.194"
+    },
     setup() {
         // UIKit layer manager puts something in document.body. We want to insert _after_ that, so that we are on top.
         // TODO(molenzwiebel): Save the scale somewhere.
