@@ -74,9 +74,10 @@ export default class Ace {
 
             this.resolvePluginDependencies();
             this.initializePlugins().then(() => {
-                const initializedCount = this.plugins.filter(x => x.state === PluginState.ENABLED).length;
-                if (initializedCount !== this.plugins.length) {
-                    this.addNotification("warning", "Ace Warning", `${this.plugins.length - initializedCount} plugin(s) were not loaded because of version mismatches or other errors during initialization.`);
+                const activePlugins = this.plugins.filter(x => x.state !== PluginState.DISABLED);
+                const initializedCount = activePlugins.filter(x => x.state === PluginState.ENABLED).length;
+                if (initializedCount !== activePlugins.length) {
+                    this.addNotification("warning", "Ace Warning", `${activePlugins.length - initializedCount} plugin(s) were not loaded because of version mismatches or other errors during initialization.`);
                 }
             });
         }).catch(e => {
@@ -334,10 +335,9 @@ export default class Ace {
         }));
 
         try {
-            this.initializationOrder = toposort(dependencies)
-                .reverse()
-                // Add plugins that don't depend on anything/get depended upon, since they were not in the topological sort.
-                .concat(this.plugins.filter(x => x.state === PluginState.LOADED && x.dependents.length === 0 && x.dependencies.length === 0).map(x => x.name));
+            this.initializationOrder = toposort(dependencies).reverse();
+            this.initializationOrder =
+                this.initializationOrder.concat(this.plugins.filter(x => x.state === PluginState.LOADED && this.initializationOrder.indexOf(x.name) === -1).map(x => x.name));
         } catch (e) {
             // Cyclic dependency, disable anything that depends on something else since we can't easily figure out the loop.
             this.plugins.filter(x => x.state === PluginState.LOADED && (x.dependents.length !== 0 || x.dependencies.length !== 0)).forEach(p => {
@@ -360,18 +360,20 @@ export default class Ace {
         let promiseChain = Promise.resolve();
 
         this.initializationOrder.map(x => this.getPluginWithName(x)!).forEach(plugin => {
-            if (plugin.state !== PluginState.LOADED) return;
-
             promiseChain = promiseChain.then(() => {
-                return plugin.setup();
-            }).catch(e => {
-                // Log error to console.
-                console.error(e);
+                if (plugin.state !== PluginState.LOADED) return;
+                
+                try {
+                    return plugin.setup();
+                } catch (e) {
+                    // Log error to console.
+                    console.error(e);
 
-                // Disable plugins that depend on this one.
-                plugin.state = PluginState.ERRORED;
+                    // Disable plugins that depend on this one.
+                    plugin.state = PluginState.ERRORED;
 
-                this.addNotification("warning", "Ace Warning", `Error during initialization of '${plugin}': ${e}.`);
+                    this.addNotification("warning", "Ace Warning", `Error during initialization of '${plugin}': ${e}.`);
+                }
             });
         });
 
