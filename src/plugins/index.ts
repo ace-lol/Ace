@@ -12,6 +12,7 @@ import SummonerIconDescription from "./summoner-icon-description";
 import Resize from "./resize";
 import ChampionGroups from "./champion-groups";
 import ClassicCurrency from "./classic-currency";
+import FancySelect from "./fancy-select";
 
 const PLUGINS: PluginDescription[] = [
     Settings,
@@ -22,7 +23,8 @@ const PLUGINS: PluginDescription[] = [
     SummonerIconDescription,
     Resize,
     ChampionGroups,
-    ClassicCurrency
+    ClassicCurrency,
+    FancySelect
 ];
 
 export default function register(ace: Ace) {
