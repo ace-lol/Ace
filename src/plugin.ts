@@ -28,6 +28,12 @@ export interface PluginDescription {
     dependencies?: { [key: string]: string };
 
     /**
+     * If this is set to true, this plugin is disabled
+     * by default and needs to be manually enabled.
+     */
+    disableByDefault?: boolean;
+
+    /**
      * The native dependencies that this plugin requires in order to function.
      * Use this to pin down the versions of the plugins that your plugin supports,
      * as to prevent changes done by Riot from causing errors or worse.

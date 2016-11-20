@@ -26,7 +26,7 @@ export default class Ace {
 
     plugins: Plugin[];
     initializationOrder: string[];
-    disabledPlugins: string[];
+    toggledPlugins: string[];
 
     // If we encountered something that definitely _shouldn't_ happen, this is
     // set to true. If we are dormant, we will not inject into anything, to
@@ -54,7 +54,7 @@ export default class Ace {
 
         try {
             this.plugins = [];
-            this.disabledPlugins = [];
+            this.toggledPlugins = [];
             this.initializationOrder = [];
             registerPlugins(this);
         } catch (e) {
@@ -63,7 +63,7 @@ export default class Ace {
             return;
         }
 
-        this.fetchBuiltinPluginInformation().then(() => this.fetchDisabledPlugins()).then(() => {
+        this.fetchBuiltinPluginInformation().then(() => this.fetchToggledPlugins()).then(() => {
             if (this.dormant) return;
 
             this.hookManager = new HookManager(this);
@@ -160,7 +160,7 @@ export default class Ace {
     /**
      * Uses the built-in LCU api to fetch a list of disabled plugins.
      */
-    private fetchDisabledPlugins(): Promise<void> {
+    private fetchToggledPlugins(): Promise<void> {
         // This call seems to 404 if Ace starts abnormally fast.
         // We retry up to 5 times before giving up.
         return new Promise<void>((resolve, reject) => {
@@ -168,8 +168,14 @@ export default class Ace {
             let retries = 0;
             function attempt() {
                 simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
-                    const data = JSON.parse(json);
-                    self.disabledPlugins = (data.data || {}).disabledPlugins || [];
+                    const data = JSON.parse(json).data || {};
+
+                    // This key used to be `disabledPlugins`.
+                    // If the user has this, it means they have not yet upgraded.
+                    const oldData = data.disabledPlugins || [];
+                    const newData = data.toggledPlugins;
+                    
+                    self.toggledPlugins = typeof newData !== "undefined" ? newData : oldData;
                     resolve();
                 }).catch(err => {
                     retries++;
@@ -295,15 +301,22 @@ export default class Ace {
             });
         });
 
-        // Step 2: Mark disabled plugins as disabled.
-        this.disabledPlugins.forEach(p => {
+        // Step 2: Mark plugins disabled by default as disabled.
+        this.plugins.filter(x => x.description.disableByDefault).forEach(p => {
+            p.state = PluginState.DISABLED;
+        });
+
+        // Step 3: Mark disabled plugins as disabled.
+        this.toggledPlugins.forEach(p => {
             const plugin = this.getPluginWithName(p);
 
             // We don't warn since it normally isn't a problem if an old plugin has been removed.
-            if (plugin) plugin.state = PluginState.DISABLED;
+            if (!plugin) return;
+            
+            plugin.state = plugin.state === PluginState.LOADED ? PluginState.DISABLED : PluginState.LOADED;
         });
 
-        // Step 3: Resolve and version check built-in dependencies.
+        // Step 4: Resolve and version check built-in dependencies.
         this.plugins.forEach(plugin => {
             if (plugin.state !== PluginState.LOADED) return;
 
@@ -325,7 +338,7 @@ export default class Ace {
             });
         });
 
-        // Step 4: Resolve and version check normal dependencies.
+        // Step 5: Resolve and version check normal dependencies.
         this.plugins.forEach(plugin => {
             if (plugin.state !== PluginState.LOADED) return;
 
@@ -340,7 +353,7 @@ export default class Ace {
             });
         });
 
-        // Step 5: Topologically sort plugins to find a correct initialization order.
+        // Step 6: Topologically sort plugins to find a correct initialization order.
         // Yes, I am aware this is some real interesting code.
         const dependencies: [string, string][] = Array.prototype.concat(...this.plugins.filter(x => x.state === PluginState.LOADED).map(p => {
             return p.dependencies.map(x => [p.name, x.name]);

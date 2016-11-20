@@ -39,7 +39,10 @@ export default class PluginsComponent extends Vue {
 
                 return dialog.acceptPromise.then(() => {
                     // User pressed 'Save', change and then return.
-                    const existing = this.$parent.api.get<string[]>("disabledPlugins", []);
+                    // We reference both toggledPlugins and disabledPlugins here since they 
+                    const existingOld = this.$parent.api.get<string[]>("disabledPlugins", []);
+                    const existingNew = this.$parent.api.get<string[] | undefined>("toggledPlugins", undefined);
+                    const existing = typeof existingNew !== "undefined" ? existingNew : existingOld;
 
                     // Remove or add the plugin, based on its previous state.
                     this.pendingToggles.forEach(name => {
@@ -52,7 +55,7 @@ export default class PluginsComponent extends Vue {
                     });
 
                     // Queue changes.
-                    this.$parent.api.mergeSettings({ disabledPlugins: existing });
+                    this.$parent.api.mergeSettings({ toggledPlugins: existing, disabledPlugins: null });
 
                     return this.$parent.api.save().then(() => {
                         // Reload the page.
