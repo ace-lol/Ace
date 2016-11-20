@@ -7,7 +7,7 @@ export default function simple_fetch(url: string, cb: (contents: string) => void
     });
 }
 
-export function simple_promise_fetch(url: string): Promise<string> {
+export function simple_promise_fetch(url: string, method: string = "GET", body?: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         const req = new XMLHttpRequest();
         req.addEventListener('load', () => {
@@ -18,7 +18,8 @@ export function simple_promise_fetch(url: string): Promise<string> {
             }
         });
         req.addEventListener('error', err => reject(err));
-        req.open("get", url, true);
-        req.send();
+        req.open(method, url, true);
+        req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        req.send(body);
     });
 }
