@@ -2,8 +2,6 @@
 
 import { PluginDescription } from "../../plugin";
 
-import "./style";
-
 export default (<PluginDescription>{
     name: "fancy-select",
     version: "1.0.0",
@@ -12,6 +10,7 @@ export default (<PluginDescription>{
         "rcp-fe-lol-champ-select": "~1.0.471"
     },
     setup() {
+        require("./style");
         this.preinit("rcp-fe-lol-champ-select", () => {
             let unregister = this.hook("ember-component", Ember => {
                 unregister();
