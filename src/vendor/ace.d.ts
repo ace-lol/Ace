@@ -8,8 +8,3 @@ interface Window {
      */
     ACE_VERSION: string;
 }
-
-/**
- * Webpack require function.
- */
-declare function require(path: string): any;

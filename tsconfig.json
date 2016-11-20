@@ -7,6 +7,9 @@
         "noUnusedLocals": true,
         "experimentalDecorators": true
     },
+    "types": [
+        "node"
+    ],
     "exclude": [
         "node_modules"
     ]
