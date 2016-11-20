@@ -9,7 +9,7 @@ import "./style";
 
 export default (<PluginDescription>{
     name: "settings",
-    version: "1.0.0",
+    version: "1.1.0",
     description: "Adds settings and plugin management for Ace plugins.",
     builtinDependencies: {
         "rcp-fe-app-controls": "~0.0.384",

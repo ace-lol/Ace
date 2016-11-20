@@ -6,6 +6,7 @@ export default (<PluginDescription>{
     name: "classic-currency",
     version: "1.0.0",
     description: "Replaces the RP and IP icons with their Legacy Client equivalents.",
+    disableByDefault: true,
     builtinDependencies: {
         "rcp-fe-lol-navigation": "~0.0.193"
     },

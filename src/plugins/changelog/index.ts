@@ -25,7 +25,7 @@ export default (<PluginDescription>{
         "rcp-fe-lol-uikit": "~0.3.194"
     },
     dependencies: {
-        "settings": "~1.0.0"
+        "settings": "^1.0.0"
     },
     setup() {
         const settings: SettingsAPI = this.getPlugin("settings").api;

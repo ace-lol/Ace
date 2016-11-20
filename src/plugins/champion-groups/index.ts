@@ -17,10 +17,10 @@ export interface Group {
 
 export default (<PluginDescription>{
     name: "champion-groups",
-    version: "1.0.0",
+    version: "1.1.0",
     description: "Adds custom champion group filters for champion select.",
     dependencies: {
-        "settings": "~1.0.0"
+        "settings": "^1.0.0"
     },
     builtinDependencies: {
         "rcp-fe-lol-champ-select": "~1.0.471"

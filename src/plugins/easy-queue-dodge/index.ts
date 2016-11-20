@@ -8,6 +8,7 @@ export default (<PluginDescription>{
     name: "easy-queue-dodge",
     version: "1.0.0",
     description: "Adds a button to champ select to dodge without closing the entire client.",
+    disableByDefault: true,
     builtInDependencies: {
         "rcp-fe-lol-champ-select": "1.0.x"
     },

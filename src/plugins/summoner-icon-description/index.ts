@@ -7,7 +7,7 @@ import DESCRIPTIONS = require("./descriptions.json");
 
 export default (<PluginDescription>{
     name: "summoner-icon-description",
-    version: "1.0.0",
+    version: "1.0.1",
     description: "Adds descriptions to your summoner icons.",
     builtinDependencies: {
         "rcp-fe-lol-summoner-icon-picker": "~0.0.26",
