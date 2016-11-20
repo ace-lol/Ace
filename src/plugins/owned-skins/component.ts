@@ -109,7 +109,11 @@ export default function(Ember: Ember, championDetails: any, uikit: any) {
                     this._data.sort((a: any, b: any) => {
                         const masteryA = this._mastery.filter(x => x.championId === a.id)[0];
                         const masteryB = this._mastery.filter(x => x.championId === b.id)[0];
-                        return (masteryB ? masteryB.championPoints : 0) - (masteryA ? masteryA.championPoints : 0);
+                        if ((masteryB ? masteryB.championLevel : 0) - (masteryA ? masteryA.championLevel : 0) != 0) {
+                            return (masteryB ? masteryB.championLevel : 0) - (masteryA ? masteryA.championLevel : 0);
+                        } else {
+                            return (masteryB ? masteryB.championPoints : 0) - (masteryA ? masteryA.championPoints : 0);
+                        }
                     });
                     this.set("champions", Ember.A(this._data.slice()));
                 }
