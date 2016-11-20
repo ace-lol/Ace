@@ -42,7 +42,13 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
     
     const el = document.createElement("div");
     parent.appendChild(el);
-    document.body.appendChild(parent);
+
+    // Close chat if it is open, since it will be above our settings.
+    const chatWindow: any | null = document.querySelector("body /deep/ lol-social-chat-window");
+    chatWindow && chatWindow.closeImmediately && chatWindow.closeImmediately();
+
+    const layerManager = document.getElementById("lol-uikit-layer-manager");
+    document.body.insertBefore(parent, layerManager);
 
     // Adding a v-uikit-tooltip="'Text here'" attribute to any element will
     // add a simple tooltip that displays the text when the user hovers over it.
