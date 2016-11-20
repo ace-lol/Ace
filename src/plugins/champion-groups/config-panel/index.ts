@@ -118,11 +118,11 @@ export default function(ace: Ace, settings: SettingsAPI) {
             `;
 
             presentDialog(ace, "Add new group", contents, "Add", "Cancel").then(domNode => {
-                const name = domNode.querySelector("input").value;
+                const name = domNode.querySelector("input")!.value;
                 if (!name) return; // No name, no new group.
                 if (this.groups.filter(x => x.name === name).length > 0) return; // Duplicate name, no new group.
 
-                const icon = domNode.querySelector("lol-uikit-dropdown-option[selected]").getAttribute("value")!;
+                const icon = domNode.querySelector("lol-uikit-dropdown-option[selected]")!.getAttribute("value")!;
 
                 // Accepted, add new group.
                 this.groups.push({
@@ -154,10 +154,10 @@ export default function(ace: Ace, settings: SettingsAPI) {
             `;
 
             presentDialog(ace, "Edit group", contents, "Save", "Cancel").then(domNode => {
-                const name = domNode.querySelector("input").value;
+                const name = domNode.querySelector("input")!.value;
                 if (!name) return; // No name, no new group.
 
-                const icon = domNode.querySelector("lol-uikit-dropdown-option[selected]").getAttribute("value")!;
+                const icon = domNode.querySelector("lol-uikit-dropdown-option[selected]")!.getAttribute("value")!;
 
                 // Accepted, add new group.
                 this.currentGroup!.name = name;

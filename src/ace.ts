@@ -394,7 +394,7 @@ export default class Ace {
         tmp.innerHTML = html;
 
         const el = tmp.children[0];        
-        el.querySelector(".close").addEventListener("click", () => {
+        el.querySelector(".close")!.addEventListener("click", () => {
             el.parentElement.removeChild(el);
         });
         this.notificationElement.appendChild(el);

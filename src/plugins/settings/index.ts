@@ -22,11 +22,11 @@ export default (<PluginDescription>{
             this.getBuiltinApi("rcp-fe-lol-uikit"),
             this.getBuiltinApi("rcp-fe-app-controls")
         ]).then(([uikit]) => {
-            const appControls = document.querySelector(".riotclient-app-controls");
+            const appControls = document.querySelector(".riotclient-app-controls")!;
 
             const button = document.createElement("div");
             button.className = "app-controls-button app-controls-ace-settings";
-            button.setAttribute("action", "ace-settings");
+            button.setAttribute("action", "_getDialogHeader"); // dummy method to not throw an error
             button.onclick = presentSettings(uikit, this.ace, api);
 
             appControls.insertBefore(button, appControls.firstChild);
@@ -42,7 +42,7 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
     
     const el = document.createElement("div");
     parent.appendChild(el);
-    uikit.getLayerManager().addLayer(parent);
+    document.body.appendChild(parent);
 
     // Adding a v-uikit-tooltip="'Text here'" attribute to any element will
     // add a simple tooltip that displays the text when the user hovers over it.
@@ -84,6 +84,6 @@ const presentSettings = (uikit: any, ace: any, api: any) => () => {
     parent.addEventListener("settings-close", () => {
         // Destroy vue
         vueInstance.$destroy();
-        uikit.getLayerManager().removeLayer(parent);
+        document.body.removeChild(parent);
     });
 };

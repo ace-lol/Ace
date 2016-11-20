@@ -4,8 +4,6 @@ import Component from "../../../../util/component-decorator";
 import Vue = require("vue/dist/vue.min.js");
 
 import RootComponent from "../root/root-component";
-
-import Ace from "../../../../ace";
 import Plugin, { PluginState } from "../../../../plugin";
 
 import LAYOUT = require("./layout.html");
@@ -164,6 +162,6 @@ export default class PluginsComponent extends Vue {
     }
 
     get plugins() {
-        return (<Ace>(<any>window).Ace).plugins;
+        return this.$parent.ace.plugins;
     }
 }
