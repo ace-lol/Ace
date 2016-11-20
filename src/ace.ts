@@ -161,10 +161,22 @@ export default class Ace {
      * Uses the built-in LCU api to fetch a list of disabled plugins.
      */
     private fetchDisabledPlugins(): Promise<void> {
-        return simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
-            const data = JSON.parse(json);
-
-            this.disabledPlugins = (data.data || {}).disabledPlugins || [];
+        // This call seems to 404 if Ace starts abnormally fast.
+        // We retry up to 5 times before giving up.
+        return new Promise<void>((resolve, reject) => {
+            const self = this;
+            let retries = 0;
+            function attempt() {
+                simple_promise_fetch("/lol-settings/v1/local/ace").then(json => {
+                    const data = JSON.parse(json);
+                    self.disabledPlugins = (data.data || {}).disabledPlugins || [];
+                    resolve();
+                }).catch(err => {
+                    retries++;
+                    retries >= 5 ? reject(err) : attempt();
+                });
+            }
+            attempt();
         });
     }
 
