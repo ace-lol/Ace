@@ -13,6 +13,7 @@ import Resize from "./resize";
 import ChampionGroups from "./champion-groups";
 import ClassicCurrency from "./classic-currency";
 import FancySelect from "./fancy-select";
+import RecentlyPlayed from "./recently-played";
 
 const PLUGINS: PluginDescription[] = [
     Settings,
@@ -24,7 +25,8 @@ const PLUGINS: PluginDescription[] = [
     Resize,
     ChampionGroups,
     ClassicCurrency,
-    FancySelect
+    FancySelect,
+    RecentlyPlayed
 ];
 
 export default function register(ace: Ace) {

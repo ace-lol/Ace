@@ -1,0 +1,56 @@
+body /deep/ lol-social-roster-group[recent]
+    & /deep/ #groupHeader
+        align-items center
+
+    & /deep/ .refresh-btn
+        padding-right 10px
+        margin 1px
+        width 10px
+        height 10px
+
+        -webkit-mask-image url('~open-iconic/svg/reload.svg')
+        -webkit-mask-size 10px
+        -webkit-mask-position center
+        -webkit-mask-repeat no-repeat
+
+        background-color #a09b8c
+        overflow hidden
+        transition 0.3s ease
+
+        &:hover
+            transform rotate(180deg)
+            background-color #f0e6d2
+
+    & /deep/ .loading-spinner
+        background-image url('/fe/lol-collections/spinner.png')
+        background-size 40px
+        background-repeat no-repeat
+        background-position center
+
+        width 40px
+        height 40px
+        margin 0 auto
+        padding 10px 0px
+
+        animation spin 4000ms infinite linear
+
+    & /deep/ .recently-played-member
+        height 30px
+        line-height 30px
+        padding-left 10px
+        color #f0e6d2
+
+        display flex
+        align-items center
+
+        & > img
+            width 24px
+            height 24px
+            padding 3px
+            display inline-block
+
+        & > span
+            padding-left 4px
+
+        &:hover
+            background rgba(240, 230, 210, 0.1)

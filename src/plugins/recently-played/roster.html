@@ -1,0 +1,5 @@
+<div else="" class="list-content">
+    <lol-social-roster-group repeat="{{index, group in data.friendGroups}}" group="{{group}}" group-drop?="{{dropAvailable}}" index="{{index}}"></lol-social-roster-group>
+    <lol-social-roster-group group="{{({id: 9001, name: 'Recent Summoners', isDefault: true})}}" recent></lol-social-roster-group>
+    <div id="marker" if="{{dropAvailable && acceptedMime === groupMime}}" animate=""></div>
+</div>

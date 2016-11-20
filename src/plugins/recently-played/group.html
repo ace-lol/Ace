@@ -1,0 +1,34 @@
+<div id="groupHeader" class="social-arrow-hit" if="{{data.friendGroups.length > 1}}" index="{{index}}" draggable-element="{{false}}" on-contextmenu="{{showContextMenu($event)}}" on-click="{{toggleOpen()}}"
+    on-mousedown="{{onMouseDown($event)}}" error="{{errorMessage}}">
+    <div id="arrow-container" class-hide="{{editingGroupName}}">
+        <lol-social-arrow-toggle open?="{{open}}" id="arrow"></lol-social-arrow-toggle>
+    </div>
+    <lol-social-roster-group-name id="groupName" group="{{ hasAttribute('recent') ? ({ name: group.name }) : group }}" on-editstart="{{toggleEditing(true)}}" on-editend="{{toggleEditing(false)}}"></lol-social-roster-group-name>
+    <span if="{{ hasAttribute('recent') }}" class="refresh-btn" on-click="{{ startLoad($event) }}"></span>
+</div>
+
+<div id="drop-area" if="{{dropAvailable && !hasAttribute('recent')}}" animate=""></div>
+
+<div id="members" show="{{ (open && !dropAvailable && !hasAttribute('group-drop')) || data.friendGroups.length === 1 }}" on-animatestart="{{animateStart()}}" on-animateend="{{animateEnd()}}" animate="slide">
+    <lol-social-roster-member if="{{ !hasAttribute('recent') }}" repeat="{{friend in data.friends | filter(friendFilter) | sort(friendSort)}}" member-id="{{friend.id}}" member="{{friend}}" animate="slide">
+    </lol-social-roster-member>
+    <div else-if="{{ hasAttribute('recent') && (loading || !startedInitialLoad) }}" class="loading-spinner">
+        {{startLoad()}}
+    </div>
+    <div else-if="{{ hasAttribute('recent') && loaded }}">
+        <div draggable-element="" class="recently-played-member" repeat="{{recent in recentPlayers}}" on-dragstart="{{onRecentDragStart($event, recent)}}" on-contextmenu="{{onRecentRightClick($event, recent)}}">
+            <img src="{{ recent.championIconUrl }}">
+            <span>{{ recent.summonerName }}</span>
+        </div>
+    </div>
+</div>
+
+<style>
+/* This needs to be embedded here because keyframes do not cross shadow dom boundaries. */
+/* Since styles.styl is in a different document, it wouldn't transfer and thus not animate. */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(359deg); }
+}
+</style>
