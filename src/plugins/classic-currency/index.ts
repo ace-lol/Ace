@@ -1,7 +1,6 @@
 "use strict";
 
 import { PluginDescription } from "../../plugin";
-import "./style";
 
 export default (<PluginDescription>{
     name: "classic-currency",
@@ -11,6 +10,6 @@ export default (<PluginDescription>{
         "rcp-fe-lol-navigation": "~0.0.193"
     },
     setup() {
-        // Doesn't need any setup.
+        require("./style");
     }
 });
