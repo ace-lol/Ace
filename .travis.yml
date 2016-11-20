@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+- "node"
+script: npm run bundle
+deploy:
+  provider: releases
+  api_key:
+    secure: "MkgX4v6WkdTNpMWIUATB5Qx4/+23617snpFVg91FS9IG6kvgFEHy8m12UqOGCB/niKg4LGLvA4qN38+eYxklpmShd975//SXvvBLTfMgmCvmZH1WsKzpr1d6mm4Ni4pCPWPwvG1vzJrS+c4UvEf0nIwWa6FqMIglCMs3kci5Pa9QuHSx1etOiy099EbtoleGmedRpEHyibiiFmCJr8ktB+dpFBc1m9DZ2UesKojBKwVJR9BO0eFJFBuS7+A0ario2eahSWzYWJEwodKzZJwz0qoeLjWUCav7xD589Gh3biT9Hz4eUsXhvK8211HmFxjt+FnwqYnPvwHCZ7GlgFIEDb15QeTY/S+lt9cRKShVo+bFoKyg7zYGUqXQFOPxZ5pWQdiuggqffCSEJ8YaNhkTCZrJaClhf48KVrIqZ56HCOIL8bWUm/fuQar2RNHLaC/g6++DTIv9IFERWCE2CxTowfz0enx8Ce95FbOdk1iYLiBRTkFtApCbdWh0bGxomZzo1Sb90bIuOJmELJS150Hp1NvP9gSc0dLZNL0meA8z2TnvIrOmucx3JJcJLv1lrTNTmwFpIZC40dbZMXSp3gEVZCUNMeOSrUwwnsl4Ug4oy2Ojp5mecGvpfKCInV9NAWSZEX9lgJuoQ2NUcA/hV9SUrw7gbrBC7AWV0MVYbK24Sbs="
+  file: "src/built/bundle.js"
+  skip_cleanup: true
+  on:
+    tags: true
