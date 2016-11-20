@@ -125,6 +125,19 @@
         -webkit-mask-repeat no-repeat
         background-color #a09b8c
 
+// Mixin for a "native" role icon.
+native-icon(name, x)
+    .icon-dropdown lol-uikit-dropdown-option[value={name}] > .champion-groups-dropdown-icon
+        -webkit-mask-image url("/fe/lol-champ-select/images/champion-grid/role-filter-disabled.png")
+        -webkit-mask-position x, 0
+
+native-icon(fighter, 0px)
+native-icon(tank, -24px)
+native-icon(mage, -48px)
+native-icon(assassin, -72px)
+native-icon(support, -96px)
+native-icon(marksman, -120px)
+
 for icon in ICONS
     lol-uikit-dropdown-option[value={icon}]
         & > .champion-groups-dropdown-icon

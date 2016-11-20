@@ -1,6 +1,7 @@
 // Riot does some pretty weird stuff with textures, so we manually fix them here.
 .champion-grid-header .role-icons
     background-image none
+    justify-content flex-start
 
     .role
         background-image url("/fe/lol-champ-select/images/champion-grid/role-filter-disabled.png")
@@ -10,34 +11,35 @@
 
     .role.active, .role:hover
         background-image url("/fe/lol-champ-select/images/champion-grid/role-filter-enabled.png")
+        border-bottom 0px solid #785a28
 
-    .fighter
+    .fighter, ._custom[icon=fighter]
         background-position 0 0
 
-    .tank
+    .tank, ._custom[icon=tank]
         background-position -32px 0
 
-    .mage
+    .mage, ._custom[icon=mage]
         background-position -64px 0
 
-    .assassin
+    .assassin, ._custom[icon=assassin]
         background-position -96px 0
 
-    .support
+    .support, ._custom[icon=support]
         background-position -128px 0
 
-    .marksman
+    .marksman, ._custom[icon=marksman]
         background-position -160px 0
 
-    ._custom
+    ._custom:not([icon=fighter]):not([icon=tank]):not([icon=mage]):not([icon=assassin]):not([icon=support]):not([icon=marksman])
         background-image none
         background-color #5B5A56
         -webkit-mask-position center 2px
         -webkit-mask-repeat no-repeat
         -webkit-mask-size 18px
 
-    ._custom.active, ._custom:hover
-        background-color #EDE4D0
+        &.active, &:hover
+            background-color #EDE4D0
 
     @import "./common"
 
